@@ -1,0 +1,25 @@
+
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+.controls {
+  margin-bottom: 20px;
+}
+#priceArea {
+  font-weight: bold;
+  margin: 10px 0;
+}
+.result-count {
+  font-size: 1.2em;
+  margin: 10px 0;
+  color: #333;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  padding: 8px;
+  border: 1px solid #ccc;
+}
