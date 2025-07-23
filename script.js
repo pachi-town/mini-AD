@@ -46,9 +46,9 @@ function filterStores() {
   const city = document.getElementById('citySelect').value;
   const keyword = document.getElementById('storeSearch').value.trim();
   const filtered = storeData.filter(s =>
-    (!prefecture || s.prefecture === prefecture) &&
-    (!city || s.city === city) &&
-    (!keyword || s.name.includes(keyword))
+    s.prefecture === prefecture &&
+    s.city === city &&
+    s.name.toLowerCase().includes(keyword.toLowerCase())
   );
   updateTable(filtered);
   updatePrices(prefecture, city);
