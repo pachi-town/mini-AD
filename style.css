@@ -1,23 +1,233 @@
+/* 基本設定と全体的なトーンの調整 */
 body {
-  font-family: sans-serif;
-  background: #f4f4f4;
-  padding: 20px;
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; /* よりビジネスライクなフォントに変更 */
+  background: #f8f9fa; /* 背景色をより明るく、清潔感のあるグレーに */
+  margin: 0;
+  padding: 1.8rem; /* 全体のパディングをさらに増やす */
+  color: #343a40; /* 基本の文字色を濃いグレーに */
+  line-height: 1.6; /* 行の高さを調整し、読みやすく */
 }
-h1 { margin-bottom: 20px; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-select, input, button {
-  padding: 8px;
+
+h1 {
+  text-align: center;
+  color: #212529; /* タイトル色をさらに濃く、引き締める */
+  margin-bottom: 2.5rem; /* タイトルの下の余白を増やす */
+  font-size: 2.5rem; /* タイトルをさらに大きく、存在感を出す */
+  letter-spacing: 0.03rem; /* 文字間を微調整 */
+  font-weight: 600; /* タイトルをやや太く */
+  border-bottom: 2px solid #e9ecef; /* タイトルの下に細い区切り線 */
+  padding-bottom: 1rem; /* 区切り線との間隔 */
+}
+
+/* コントロール部分のデザイン - プロフェッショナルな入力フォーム */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* 要素間の隙間を均等に広げる */
+  margin-bottom: 2rem; /* 下の余白を増やす */
+  background-color: #ffffff;
+  padding: 2rem; /* パディングをさらに増やす */
+  border-radius: 12px; /* 角丸を少し大きく、柔らかな印象に */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* 影を強調し、立体感を出す */
+  align-items: center;
+  justify-content: center; /* 要素の数が少ない場合の中央揃え */
+  border: 1px solid #dee2e6; /* 薄い境界線を追加し、よりクリーンに */
+}
+
+select,
+input[type="text"] {
+  padding: 0.85rem 1.2rem; /* パディングをさらに増やす */
+  font-size: 1.05rem; /* フォントサイズを微調整 */
+  border: 1px solid #adb5bd; /* 枠線の色をより落ち着いたグレーに */
+  border-radius: 8px; /* 角丸を統一 */
+  background-color: #f8f9fa;
+  color: #495057;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  flex-grow: 1;
+  min-width: 160px; /* 最小幅を確保 */
+  max-width: 280px; /* 最大幅を少し広げる */
+}
+
+select:focus,
+input[type="text"]:focus {
+  border-color: #007bff; /* フォーカス時の枠線色 (アクセントカラー) */
+  box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.3); /* フォーカス時の影を強調 */
+  background-color: #e6f7ff; /* フォーカス時の背景色を薄い青に */
+  outline: none;
+}
+
+button {
+  padding: 0.9rem 1.8rem; /* パディングを増やす */
+  font-size: 1.05rem; /* フォントサイズを微調整 */
+  font-weight: 700; /* 文字をさらに太く */
+  color: #ffffff;
+  background-color: #007bff; /* ボタンの背景色 (アクセントカラー) */
+  border: none;
+  border-radius: 8px; /* 角丸を統一 */
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; /* ホバー時のアニメーションを強化 */
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2); /* ボタンの影を強調 */
+}
+
+button:hover {
+  background-color: #0056b3; /* ホバー時の背景色を濃く */
+  transform: translateY(-2px); /* 少し上に浮き上がる量を増やす */
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.35); /* ホバー時の影を強調 */
+}
+
+button:active {
+  background-color: #004085;
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2); /* クリック時の影 */
+}
+
+/* 価格表示エリア - 情報の明確化 */
+#priceArea {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: #eafbea; /* さらに落ち着いた薄緑色に */
+  border-left: 6px solid #28a745; /* 左側のアクセントラインを太く */
+  border-radius: 10px; /* 角丸を統一 */
+  margin-bottom: 2rem;
+  font-size: 1.1rem; /* フォントサイズを大きくし、見やすく */
+  line-height: 1.7; /* 行の高さを調整 */
+  color: #333;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07); /* 軽い影 */
+}
+
+#priceArea b {
+  color: #1a7a3a; /* 地域名をより濃い緑で強調 */
+  font-weight: 600; /* 太さも調整 */
+}
+
+/* 検索結果件数 */
+#resultCount {
+  text-align: right;
+  margin-bottom: 1rem; /* 余白を調整 */
+  font-weight: 600; /* やや太く */
+  color: #555;
   font-size: 1rem;
 }
+
+/* 検索結果テーブル - プロフェッショナルな表示 */
 table {
   width: 100%;
-  border-collapse: collapse;
-  background: white;
+  border-collapse: separate; /* border-collapseをseparateにしてborder-spacingを可能に */
+  border-spacing: 0; /* セル間の隙間をなくす */
+  background: #ffffff;
+  border-radius: 12px; /* テーブル全体の角丸を統一 */
+  overflow: hidden; /* 角丸と影のために必須 */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* 影を強調 */
+  margin-bottom: 3rem; /* 下に大きな余白 */
 }
+
 th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  border: 1px solid #e9ecef; /* 枠線を薄く、目立たなく */
+  padding: 1rem 1.2rem; /* パディングを増やす */
+  text-align: left;
+  word-wrap: break-word;
 }
+
 th {
-  background: #eee;
+  background: #007bff; /* ヘッダーの背景色をボタンと統一 (アクセントカラー) */
+  color: #ffffff;
+  font-weight: 700; /* ヘッダーの文字を太く */
+  position: sticky; /* ヘッダーを固定 (スクロール時に役立つが、親要素の設定も必要) */
+  top: 0; /* sticky設定の基準 */
+  z-index: 1; /* 他の要素の上に表示 */
+}
+
+/* ヘッダーの角丸 */
+table thead tr:first-child th:first-child {
+  border-top-left-radius: 12px;
+}
+table thead tr:first-child th:last-child {
+  border-top-right-radius: 12px;
+}
+
+td {
+  background-color: #ffffff;
+}
+
+tr:nth-child(even) td {
+  background-color: #f8f9fa; /* 偶数行の背景色をさらに薄いグレーに */
+}
+
+tr:hover td {
+  background-color: #e0f2f7; /* 行のホバー効果を少し濃い青に */
+  cursor: pointer;
+}
+
+/* レスポンシブデザインの調整 - モバイルフレンドリーに */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem; /* モバイルでのパディングを調整 */
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.2rem;
+    gap: 0.8rem;
+  }
+
+  select,
+  input[type="text"],
+  button {
+    max-width: 100%;
+    width: 100%;
+    font-size: 0.95rem; /* モバイルでのフォントサイズ調整 */
+  }
+
+  #priceArea {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  /* テーブルの表示改善（モバイル向け） */
+  table, thead, tbody, th, td, tr {
+    display: block; /* テーブル要素をブロック要素として表示 */
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px; /* ヘッダーを非表示にする */
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #dee2e6; /* 各行に枠線 */
+    margin-bottom: 1rem; /* 行間に余白 */
+    border-radius: 8px; /* 行の角丸 */
+    overflow: hidden; /* 角丸のために必須 */
+  }
+
+  td {
+    border: none; /* セルの枠線をなくす */
+    border-bottom: 1px solid #eee; /* セル下部に区切り線 */
+    position: relative;
+    padding-left: 50%; /* ラベル用のスペース */
+    text-align: right; /* データは右寄せ */
+    font-size: 0.9rem;
+  }
+
+  td:last-child {
+    border-bottom: none; /* 最後のセルは下線なし */
+  }
+
+  td::before {
+    content: attr(data-label); /* data-label属性の値をラベルとして表示 */
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-left: 0.75rem;
+    font-weight: bold;
+    text-align: left; /* ラベルは左寄せ */
+    color: #6c757d; /* ラベルの色 */
+  }
 }
