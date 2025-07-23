@@ -1,13 +1,18 @@
 body {
   font-family: sans-serif;
   background: #f4f4f4;
+  margin: 0;
   padding: 20px;
 }
-h1 { margin-bottom: 20px; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-select, input, button {
-  padding: 8px;
-  font-size: 1rem;
+h1 {
+  color: #000;
+}
+.controls {
+  margin-bottom: 1em;
+}
+#priceInfo {
+  font-weight: bold;
+  margin-bottom: 0.5em;
 }
 table {
   width: 100%;
@@ -15,8 +20,8 @@ table {
   background: white;
 }
 th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  padding: 8px;
+  border: 1px solid #ddd;
 }
 th {
   background: #eee;
