@@ -1,78 +1,100 @@
 
 let storeData = [];
-let priceData = {};
 
-fetch('store_data.json')
-  .then(res => res.json())
+fetch('store_with_price.json')
+  .then(response => response.json())
   .then(data => {
     storeData = data;
-    populateDropdowns();
-    displayAll(); // 初期表示は全国
+    populatePrefectures();
+    renderTable(data);
+    updatePrice('全国');
   });
 
-fetch('price_data.json')
-  .then(res => res.json())
-  .then(data => priceData = data);
-
-function populateDropdowns() {
-  const prefs = [...new Set(storeData.map(s => s.都道府県))];
+function populatePrefectures() {
   const prefSelect = document.getElementById('prefSelect');
-  prefs.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = opt.text = p;
-    prefSelect.add(opt);
-  });
+  const citySelect = document.getElementById('citySelect');
+  const areaSelect = document.getElementById('areaSelect');
 
-  prefSelect.addEventListener('change', () => {
-    const cities = [...new Set(storeData.filter(s => s.都道府県 === prefSelect.value).map(s => s.市区町村))];
-    const citySelect = document.getElementById('citySelect');
-    citySelect.innerHTML = '<option>市区町村選択</option>';
-    cities.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = opt.text = c;
-      citySelect.add(opt);
-    });
-    search();
-  });
+  const prefectures = [...new Set(storeData.map(d => d.都道府県))].sort();
+  const areas = [...new Set(storeData.map(d => d.エリア))].sort();
 
-  document.getElementById('citySelect').addEventListener('change', search);
-  document.getElementById('nameInput').addEventListener('input', search);
-}
+  prefSelect.innerHTML = '<option value="">都道府県選択</option>';
+  citySelect.innerHTML = '<option value="">市区町村選択</option>';
+  areaSelect.innerHTML = '<option value="">エリア選択</option>';
 
-function search() {
-  const pref = document.getElementById('prefSelect').value;
-  const city = document.getElementById('citySelect').value;
-  const name = document.getElementById('nameInput').value.trim();
-
-  let results = storeData;
-  if (pref && pref !== '都道府県選択') results = results.filter(s => s.都道府県 === pref);
-  if (city && city !== '市区町村選択') results = results.filter(s => s.市区町村 === city);
-  if (name) results = results.filter(s => s.店名.includes(name));
-
-  const table = document.getElementById('storeTable');
-  table.innerHTML = '';
-  results.forEach(store => {
-    const tr = document.createElement('tr');
-    const sign = store.サイネージ === '新' ? 'マルチディスプレイ' : '1面のみ';
-    tr.innerHTML = `<td class="border px-2 py-1">${sign}</td><td class="border px-2 py-1">${store.店名}</td><td class="border px-2 py-1">${store.住所}</td>`;
-    table.appendChild(tr);
-  });
-
-  document.getElementById('resultCount').textContent = `${results.length}件の店舗が見つかりました`;
-
-  const area = document.getElementById('priceArea');
-  const key = pref && pref !== '都道府県選択' ? pref : '全国';
-  const p = priceData[key];
-  if (p) {
-    area.innerHTML = `<span class="text-blue-800">${key}</span>：ベーシック ${p['ベーシック']?.toLocaleString() || 0}円 ／ マルチのみ ${p['マルチのみ']?.toLocaleString() || 0}円 ／ POS静止画 ${p['POS静止画']?.toLocaleString() || 0}円 ／ POS動画 ${p['POS動画']?.toLocaleString() || 0}円`;
-  } else {
-    area.innerHTML = '';
+  for (const pref of prefectures) {
+    prefSelect.innerHTML += `<option value="${pref}">${pref}</option>`;
   }
+  for (const area of areas) {
+    areaSelect.innerHTML += `<option value="${area}">${area}</option>`;
+  }
+
+  prefSelect.onchange = () => {
+    const selected = prefSelect.value;
+    const filtered = storeData.filter(d => d.都道府県 === selected);
+    const cities = [...new Set(filtered.map(d => d.市区町村))].sort();
+    citySelect.innerHTML = '<option value="">市区町村選択</option>';
+    for (const city of cities) {
+      citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+    }
+    updatePrice(selected || '全国');
+    renderTable(filtered);
+  };
+
+  citySelect.onchange = () => {
+    const selectedPref = prefSelect.value;
+    const selectedCity = citySelect.value;
+    const filtered = storeData.filter(d => d.都道府県 === selectedPref && d.市区町村 === selectedCity);
+    renderTable(filtered);
+  };
+
+  areaSelect.onchange = () => {
+    const selected = areaSelect.value;
+    const filtered = storeData.filter(d => d.エリア === selected);
+    renderTable(filtered);
+    updatePrice(selected);
+  };
+
+  document.getElementById('nameInput').oninput = (e) => {
+    const keyword = e.target.value;
+    const filtered = storeData.filter(d => d.店名.includes(keyword));
+    renderTable(filtered);
+  };
 }
 
-function displayAll() {
-  document.getElementById('prefSelect').value = '都道府県選択';
-  document.getElementById('citySelect').value = '市区町村選択';
-  document.getElementById('nameInput').value = '';
-  search();
+function updatePrice(region) {
+  const priceBox = document.getElementById('priceArea');
+  const target = storeData.find(d => d.都道府県 === region || d.エリア === region || region === '全国');
+  if (!target) {
+    priceBox.innerHTML = '価格情報なし';
+    return;
+  }
+  priceBox.innerHTML = `
+    <div class="mb-2">
+      <strong>対象地域：</strong>${region}<br/>
+      <strong>ベーシック：</strong>${formatYen(target['ベーシック'])}／週　
+      <strong>3面のみ：</strong>${formatYen(target['3面のみ'])}／週　
+      <strong>POS静止画：</strong>${formatYen(target['POS静止画'])}／週　
+      <strong>POS動画：</strong>${formatYen(target['POS動画'])}／週
+    </div>`;
+}
+
+function formatYen(val) {
+  return val ? `¥${Number(val).toLocaleString()}` : '-';
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('storeTable');
+  const counter = document.getElementById('resultCount');
+  tbody.innerHTML = '';
+  counter.textContent = `該当件数：${data.length} 件`;
+
+  for (const row of data) {
+    const sign = row.サイネージ === '新' ? 'マルチディスプレイ' : '1面のみ';
+    tbody.innerHTML += `<tr>
+      <td class="border px-2 py-1">${sign}</td>
+      <td class="border px-2 py-1">${row.店名}</td>
+      <td class="border px-2 py-1">${row.住所}</td>
+    </tr>`;
+  }
 }

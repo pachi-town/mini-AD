@@ -2,26 +2,50 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>ミニストップAD 店舗検索</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>店舗検索・価格表示</title>
+  <script src="script.js" defer></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="p-4 max-w-5xl mx-auto font-sans">
-  <h1 class="text-2xl font-bold mb-4">ミニストップAD 店舗検索</h1>
-  <div class="flex flex-wrap gap-2 mb-4 items-center">
-    <select id="prefSelect" class="border px-2 py-1"><option>都道府県選択</option></select>
-    <select id="citySelect" class="border px-2 py-1"><option>市区町村選択</option></select>
-    <input type="text" id="nameInput" class="border px-2 py-1" placeholder="店舗名で検索" />
-    <button onclick="search()" class="bg-blue-500 text-white px-4 py-1 rounded">検索</button>
+<body class="bg-gray-50 text-gray-800 p-6">
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-2xl font-bold mb-4">店舗検索とセグメント表示</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div>
+        <label class="block text-sm font-medium">都道府県</label>
+        <select id="prefSelect" class="w-full border px-2 py-1 rounded"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">市区町村</label>
+        <select id="citySelect" class="w-full border px-2 py-1 rounded"></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">エリア</label>
+        <select id="areaSelect" class="w-full border px-2 py-1 rounded"></select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium">店舗名で検索</label>
+      <input type="text" id="nameInput" placeholder="店名を入力" class="w-full border px-2 py-1 rounded" />
+    </div>
+
+    <div id="priceArea" class="bg-white p-4 mb-4 shadow rounded text-sm border"></div>
+
+    <div class="text-sm mb-2" id="resultCount">該当件数：</div>
+    <div class="overflow-x-auto">
+      <table class="table-auto w-full text-sm border">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="border px-2 py-1">サイネージ</th>
+            <th class="border px-2 py-1">店舗名</th>
+            <th class="border px-2 py-1">住所</th>
+          </tr>
+        </thead>
+        <tbody id="storeTable"></tbody>
+      </table>
+    </div>
   </div>
-  <div id="priceArea" class="font-bold mb-2"></div>
-  <div id="resultCount" class="mb-2 text-sm text-gray-700"></div>
-  <div class="overflow-x-auto">
-    <table class="w-full border-collapse text-sm">
-      <thead><tr class="bg-gray-100 text-left"><th class="border px-2 py-1">サイネージ</th><th class="border px-2 py-1">店名</th><th class="border px-2 py-1">住所</th></tr></thead>
-      <tbody id="storeTable"></tbody>
-    </table>
-  </div>
-  <script src="script.js"></script>
 </body>
 </html>
