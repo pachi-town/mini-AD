@@ -1,39 +1,118 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ミニストップAD 店舗検索</title>
-  <style>
-    body { font-family: sans-serif; padding: 1rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-    th { background: #f0f0f0; }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body>
-  <h1>ミニストップAD 店舗検索</h1>
+<body class="p-4 max-w-5xl mx-auto font-sans">
+  <h1 class="text-2xl font-bold mb-4">ミニストップAD 店舗検索</h1>
 
-  <div class="controls">
-    <label>都道府県:
-      <select id="pref-select"><option value="">--選択--</option></select>
-    </label>
-    <label>市区町村:
-      <select id="city-select"><option value="">--選択--</option></select>
-    </label>
-    <input type="text" id="searchBox" placeholder="店舗名で検索" />
-    <button onclick="render()">検索</button>
+  <div class="flex flex-wrap gap-2 mb-4 items-center">
+    <select id="pref" class="p-2 border">
+      <option value="">都道府県選択</option>
+    </select>
+    <select id="city" class="p-2 border">
+      <option value="">市区町村選択</option>
+    </select>
+    <input id="query" type="text" placeholder="店舗名で検索" class="p-2 border flex-1">
+    <button onclick="render()" class="p-2 bg-blue-500 text-white">検索</button>
   </div>
 
-  <div id="priceArea" class="price-info"></div>
-  <div id="resultCount" class="result-count"></div>
-  <table id="storeTable" class="store-table">
-    <thead>
-      <tr><th>サイネージ</th><th>住所</th><th>サイネージ種別</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="priceArea" class="font-bold mb-2"></div>
+  <div id="resultCount" class="mb-2 text-sm text-gray-700"></div>
 
-  <script src="script.js"></script>
+  <div class="overflow-x-auto">
+    <table class="min-w-full border border-gray-300">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-2 border">サイネージ</th>
+          <th class="p-2 border">店名</th>
+          <th class="p-2 border">住所</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let stores = [];
+    let prices = {};
+
+    async function loadData() {
+      const [storeRes, priceRes] = await Promise.all([
+        fetch("store_data.json"),
+        fetch("price_data.json")
+      ]);
+      stores = await storeRes.json();
+      prices = await priceRes.json();
+
+      const prefs = [...new Set(stores.map(s => s.都道府県).filter(Boolean))].sort();
+      const prefSelect = document.getElementById("pref");
+      prefs.forEach(pref => {
+        const opt = document.createElement("option");
+        opt.value = opt.textContent = pref;
+        prefSelect.appendChild(opt);
+      });
+
+      prefSelect.addEventListener("change", () => {
+        const selectedPref = prefSelect.value;
+        const citySelect = document.getElementById("city");
+        citySelect.innerHTML = '<option value="">市区町村選択</option>';
+        const cities = [...new Set(stores.filter(s => s.都道府県 === selectedPref).map(s => s.市区町村))].sort();
+        cities.forEach(city => {
+          const opt = document.createElement("option");
+          opt.value = opt.textContent = city;
+          citySelect.appendChild(opt);
+        });
+        showPrices();
+        render();
+      });
+
+      document.getElementById("city").addEventListener("change", render);
+      document.getElementById("query").addEventListener("input", render);
+
+      showPrices();
+      render();
+    }
+
+    function showPrices() {
+      const pref = document.getElementById("pref").value;
+      const data = pref && prices[pref] ? prices[pref] : prices;
+      document.getElementById("priceArea").innerHTML =
+        `<span class="text-gray-700">${pref || "全国"}：</span>
+         ベーシック ${data["ベーシック"] || 0}円 ／
+         マルチのみ ${data["マルチのみ"] || 0}円 ／
+         POS静止画 ${data["POS静止画"] || 0}円 ／
+         POS動画 ${data["POS動画"] || 0}円`;
+    }
+
+    function render() {
+      const pref = document.getElementById("pref").value;
+      const city = document.getElementById("city").value;
+      const query = document.getElementById("query").value.trim();
+
+      const filtered = stores.filter(s => {
+        return (!pref || s.都道府県 === pref) &&
+               (!city || s.市区町村 === city) &&
+               (!query || (s.店名 && s.店名.includes(query)));
+      });
+
+      document.getElementById("resultCount").textContent = `${filtered.length}件の店舗が見つかりました`;
+
+      const tbody = document.getElementById("resultBody");
+      tbody.innerHTML = "";
+      filtered.forEach(s => {
+        const signage = s.サイネージ === "1" ? "1面のみ" :
+                        s.サイネージ === "新" ? "マルチディスプレイ" : s.サイネージ;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td class='p-2 border'>${signage}</td><td class='p-2 border'>${s.店名}</td><td class='p-2 border'>${s.住所}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    loadData();
+  </script>
 </body>
 </html>
