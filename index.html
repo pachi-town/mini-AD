@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>店舗検索とセグメント表示</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>ミニストップ 店舗検索</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>店舗検索とセグメント表示</h1>
+  <h1>店舗検索・価格表示</h1>
   <div class="controls">
     <select id="prefectureSelect"><option value="">都道府県</option></select>
     <select id="citySelect"><option value="">市区町村</option></select>
-    <select id="areaSelect"><option value="">エリア</option></select>
-    <input type="text" id="searchInput" placeholder="店舗名を入力" />
-    <button id="searchButton">検索</button>
+    <input type="text" id="searchInput" placeholder="店舗名で検索">
+    <button id="searchBtn">検索</button>
   </div>
-  <div id="priceArea"></div>
+  <div id="priceInfo"></div>
   <div id="resultCount"></div>
   <table>
     <thead>

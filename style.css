@@ -1,52 +1,23 @@
 body {
   font-family: sans-serif;
-  background: #f8f9fa;
-  margin: 0;
-  padding: 1rem;
+  background: #f4f4f4;
+  padding: 20px;
 }
-h1 {
-  margin-bottom: 1rem;
-}
-.controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-select, input {
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-button {
-  padding: 0.5rem 1rem;
+h1 { margin-bottom: 20px; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+select, input, button {
+  padding: 8px;
   font-size: 1rem;
 }
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  table-layout: fixed; /* テーブルのレイアウトを固定 */
+  background: white;
 }
 th, td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
-  text-align: left;
-  word-break: break-all; /* 長い単語も折り返す */
+  border: 1px solid #ccc;
+  padding: 10px;
 }
 th {
-  background: #f1f1f1;
-  white-space: nowrap; /* ヘッダーのテキストが改行されないようにする */
-}
-/* 各thに幅を割り当てる（必要に応じて調整してください） */
-th:nth-child(1) { width: 15%; } /* サイネージ */
-th:nth-child(2) { width: 30%; } /* 店舗名 */
-th:nth-child(3) { width: 55%; } /* 住所 */
-
-/* priceAreaのスタイル調整（見やすくするため） */
-#priceArea {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  background-color: #e9ecef;
-  border-radius: 4px;
+  background: #eee;
 }
