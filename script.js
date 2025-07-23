@@ -1,3 +1,4 @@
+
 let storeData = [];
 let priceData = {};
 
@@ -44,25 +45,23 @@ function renderResults() {
     (!keyword || s.店名.includes(keyword))
   );
 
-  // テーブル描画
   const tbody = document.getElementById("resultBody");
   tbody.innerHTML = "";
   results.forEach(s => {
     const tr = document.createElement("tr");
-    const signage = s.サイネージ === '1面のみ設置店舗' ? '1面のみ'
-                   : s.サイネージ === 'マルチディスプレイ設置店舗' ? 'マルチディスプレイ'
-                   : s.サイネージ || '';
+    const signage = s.サイネージ || "";
     tr.innerHTML = `<td>${signage}</td><td>${s.店名}</td><td>${s.住所}</td>`;
     tbody.appendChild(tr);
   });
 
   document.getElementById("resultCount").textContent = `該当件数：${results.length}`;
 
-  // 価格表示
+  // 価格ロジック（都道府県→エリア→全国）
   let price = priceData[pref] || priceData[results[0]?.エリア] || priceData['全国'];
+  const zone = pref || results[0]?.エリア || '全国';
   if (price) {
     document.getElementById("priceInfo").innerHTML = `
-      <strong>${pref || results[0]?.エリア || '全国'}：</strong>
+      <strong>${zone}：</strong>
       ベーシック ${price.ベーシック}円 ／ 
       マルチのみ ${price.マルチのみ}円 ／ 
       POS静止画 ${price.POS静止画}円 ／ 
