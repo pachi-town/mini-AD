@@ -55,7 +55,7 @@ function render() {
   let filtered = stores.filter(s => {
     return (!pref || s.都道府県 === pref)
       && (!city || s.市区町村 === city)
-      && (!query || (s.住所 && s.住所.includes(query)));
+      && (!query || (s.店名 && s.店名.includes(query)));
   });
 
   document.getElementById("resultCount").innerHTML = `${filtered.length} 件の店舗が見つかりました`;
@@ -67,7 +67,7 @@ function render() {
                     s.サイネージ === "新" ? "マルチディスプレイ" : (s.サイネージ ?? "―");
 
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${signage}</td><td>${s.住所}</td><td>${s.サイネージ種別 ?? "―"}</td>`;
+    tr.innerHTML = `<td>${signage}</td><td>${s.店名 ?? "―"}</td><td>${s.住所}</td>`;
     tbody.appendChild(tr);
   });
 }
