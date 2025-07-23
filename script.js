@@ -7,7 +7,7 @@ fetch('store_data.json')
   .then(data => {
     storeData = data;
     populateDropdowns();
-    displayAll(); // 初回全国表示
+    displayAll(); // 初期表示は全国
   });
 
 fetch('price_data.json')
@@ -32,7 +32,11 @@ function populateDropdowns() {
       opt.value = opt.text = c;
       citySelect.add(opt);
     });
+    search();
   });
+
+  document.getElementById('citySelect').addEventListener('change', search);
+  document.getElementById('nameInput').addEventListener('input', search);
 }
 
 function search() {
@@ -43,20 +47,19 @@ function search() {
   let results = storeData;
   if (pref && pref !== '都道府県選択') results = results.filter(s => s.都道府県 === pref);
   if (city && city !== '市区町村選択') results = results.filter(s => s.市区町村 === city);
-  if (name) results = results.filter(s => s.店舗名.includes(name));
+  if (name) results = results.filter(s => s.店名.includes(name));
 
   const table = document.getElementById('storeTable');
   table.innerHTML = '';
   results.forEach(store => {
     const tr = document.createElement('tr');
     const sign = store.サイネージ === '新' ? 'マルチディスプレイ' : '1面のみ';
-    tr.innerHTML = `<td class="border px-2 py-1">${sign}</td><td class="border px-2 py-1">${store.店舗名}</td><td class="border px-2 py-1">${store.住所}</td>`;
+    tr.innerHTML = `<td class="border px-2 py-1">${sign}</td><td class="border px-2 py-1">${store.店名}</td><td class="border px-2 py-1">${store.住所}</td>`;
     table.appendChild(tr);
   });
 
   document.getElementById('resultCount').textContent = `${results.length}件の店舗が見つかりました`;
 
-  // 金額表示
   const area = document.getElementById('priceArea');
   const key = pref && pref !== '都道府県選択' ? pref : '全国';
   const p = priceData[key];
