@@ -1,17 +1,20 @@
-
 body {
   font-family: sans-serif;
   padding: 20px;
 }
 .controls {
   margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 #priceArea {
   font-weight: bold;
   margin: 10px 0;
 }
 .result-count {
-  font-size: 1.2em;
+  font-size: 1.1em;
   margin: 10px 0;
   color: #333;
 }
@@ -20,6 +23,21 @@ table {
   width: 100%;
 }
 th, td {
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
+}
+th {
+  background: #f0f0f0;
+}
+tr:nth-child(even) {
+  background-color: #fafafa;
+}
+input[type="text"] {
+  padding: 6px;
+  font-size: 1em;
+}
+button {
+  padding: 6px 12px;
+  font-size: 1em;
+  cursor: pointer;
 }

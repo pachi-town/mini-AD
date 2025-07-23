@@ -9,7 +9,7 @@ async function loadData() {
   stores = await storeRes.json();
   prices = await priceRes.json();
   populateDropdowns();
-  showPrices();
+  showPrices(); // 全国価格表示
   render();
 }
 
@@ -32,12 +32,19 @@ function populateDropdowns() {
       opt.value = opt.text = city;
       citySelect.appendChild(opt);
     }
+    showPrices(); // 都道府県選択時に価格切り替え
   });
 }
 
 function showPrices() {
   const area = document.getElementById("priceArea");
-  area.innerHTML = `<strong>全国：</strong> ベーシック ${prices["ベーシック"] ?? 0}円 / マルチのみ ${prices["マルチのみ"] ?? 0}円 / POS静止画 ${prices["POS静止画"] ?? 0}円 / POS動画 ${prices["POS動画"] ?? 0}円`;
+  const pref = document.getElementById("pref-select").value;
+  if (!pref || !prices[pref]) {
+    area.innerHTML = `<strong>全国：</strong> ベーシック ${prices["ベーシック"] ?? 0}円 / マルチのみ ${prices["マルチのみ"] ?? 0}円 / POS静止画 ${prices["POS静止画"] ?? 0}円 / POS動画 ${prices["POS動画"] ?? 0}円`;
+  } else {
+    const p = prices[pref];
+    area.innerHTML = `<strong>${pref}：</strong> ベーシック ${p["ベーシック"] ?? 0}円 / マルチのみ ${p["マルチのみ"] ?? 0}円 / POS静止画 ${p["POS静止画"] ?? 0}円 / POS動画 ${p["POS動画"] ?? 0}円`;
+  }
 }
 
 function render() {
@@ -56,8 +63,11 @@ function render() {
   const tbody = document.querySelector("#storeTable tbody");
   tbody.innerHTML = "";
   filtered.forEach(s => {
+    const signage = s.サイネージ === "1" ? "1面のみ" :
+                    s.サイネージ === "新" ? "マルチディスプレイ" : (s.サイネージ ?? "―");
+
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${s.サイネージ}</td><td>${s.住所}</td><td>${s.サイネージ種別}</td>`;
+    tr.innerHTML = `<td>${signage}</td><td>${s.住所}</td><td>${s.サイネージ種別 ?? "―"}</td>`;
     tbody.appendChild(tr);
   });
 }
