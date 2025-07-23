@@ -2,6 +2,11 @@
 let storeData = [];
 let priceData = {};
 
+const AREA_ALIAS = {
+  "近畿": "近畿北陸",
+  "北陸": "近畿北陸"
+};
+
 Promise.all([
   fetch('store.json').then(res => res.json()),
   fetch('prices_by_region.json').then(res => res.json())
@@ -48,8 +53,8 @@ function renderResults() {
   const tbody = document.getElementById("resultBody");
   tbody.innerHTML = "";
   results.forEach(s => {
-    const tr = document.createElement("tr");
     const signage = s.サイネージ || "";
+    const tr = document.createElement("tr");
     tr.innerHTML = `<td>${signage}</td><td>${s.店名}</td><td>${s.住所}</td>`;
     tbody.appendChild(tr);
   });
@@ -57,8 +62,12 @@ function renderResults() {
   document.getElementById("resultCount").textContent = `該当件数：${results.length}`;
 
   // 価格ロジック（都道府県→エリア→全国）
-  let price = priceData[pref] || priceData[results[0]?.エリア] || priceData['全国'];
-  const zone = pref || results[0]?.エリア || '全国';
+  const area = results[0]?.エリア;
+  const aliasedArea = AREA_ALIAS[area] || area;
+
+  let price = priceData[pref] || priceData[aliasedArea] || priceData['全国'];
+  const zone = pref || aliasedArea || '全国';
+
   if (price) {
     document.getElementById("priceInfo").innerHTML = `
       <strong>${zone}：</strong>
