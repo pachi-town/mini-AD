@@ -1,1 +1,37 @@
-/* Tailwindを使っているため追加CSSは不要です */
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f7f7f7;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.controls input, .controls select {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  background: #eee;
+}
