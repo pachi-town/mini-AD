@@ -1,21 +1,24 @@
 let storeData = [];
+let priceDataByRegion = [];
 
-fetch('store_with_price.json')
-  .then(response => response.json())
-  .then(data => {
-    storeData = data;
-    populateSelectors(data);
-    renderTable(data);
-    updatePriceDisplay(data);
-  })
-  .catch(error => {
-    console.error('Error fetching store data:', error);
-    document.getElementById("resultBody").innerHTML = '<tr><td colspan="3">店舗データを読み込めませんでした。</td></tr>';
-    document.getElementById("priceArea").textContent = '価格情報を読み込めませんでした。';
-  });
+// 両方のJSONファイルを同時にフェッチ
+Promise.all([
+    fetch('stores.json').then(response => response.json()), // 店舗データ
+    fetch('prices_by_region.json').then(response => response.json()) // 地域別価格データ
+])
+.then(([stores, prices]) => {
+    storeData = stores;
+    priceDataByRegion = prices;
+
+    populateSelectors(storeData);
+    renderTable(storeData);
+    updatePriceDisplay(storeData); // 初期表示で全国の価格を表示
+})
+.catch(error => console.error('データの読み込み中にエラーが発生しました:', error));
+
 
 function populateSelectors(data) {
-  const prefectures = [...new Set(data.map(item => item.都道府県))].sort(); // ソートを追加
+  const prefectures = [...new Set(data.map(item => item.都道府県))];
   const prefectureSelect = document.getElementById("prefectureSelect");
   prefectures.forEach(pref => {
     const option = document.createElement("option");
@@ -25,7 +28,7 @@ function populateSelectors(data) {
 
   prefectureSelect.addEventListener("change", () => {
     const selectedPref = prefectureSelect.value;
-    const cities = [...new Set(data.filter(d => d.都道府県 === selectedPref).map(d => d.市区町村))].sort(); // ソートを追加
+    const cities = [...new Set(data.filter(d => d.都道府県 === selectedPref).map(d => d.市区町村))];
     const citySelect = document.getElementById("citySelect");
     citySelect.innerHTML = '<option value="">市区町村</option>';
     cities.forEach(city => {
@@ -34,79 +37,91 @@ function populateSelectors(data) {
       citySelect.appendChild(opt);
     });
 
-    const areas = [...new Set(data.filter(d => d.都道府県 === selectedPref).map(d => d.エリア))].sort(); // ソートを追加
+    // エリアの選択肢も都道府県に連動させる
+    // 選択された都道府県に紐づくエリアを抽出
+    const areasInSelectedPref = [...new Set(data.filter(d => d.都道府県 === selectedPref).map(d => d.エリア))];
     const areaSelect = document.getElementById("areaSelect");
     areaSelect.innerHTML = '<option value="">エリア</option>';
-    areas.forEach(area => {
+    areasInSelectedPref.forEach(area => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = area;
       areaSelect.appendChild(opt);
     });
 
-    updatePriceDisplay(data);
+    updatePriceDisplay(storeData); // 価格表示を更新
     filterAndRender();
   });
 
-  document.getElementById("citySelect").addEventListener("change", filterAndRender); // 市区町村変更時もフィルター
-  document.getElementById("areaSelect").addEventListener("change", filterAndRender); // エリア変更時もフィルター
-  document.getElementById("searchInput").addEventListener("input", filterAndRender); // 検索入力時もフィルター
-
+  document.getElementById("citySelect").addEventListener("change", filterAndRender);
+  document.getElementById("areaSelect").addEventListener("change", () => {
+    updatePriceDisplay(storeData); // エリア選択時も価格表示を更新
+    filterAndRender();
+  });
   document.getElementById("searchButton").addEventListener("click", filterAndRender);
 }
 
 function updatePriceDisplay(data) {
   const pref = document.getElementById("prefectureSelect").value;
+  const area = document.getElementById("areaSelect").value;
   const priceDiv = document.getElementById("priceArea");
-  let relevantPriceData = null;
+  let displayPrice = null;
+  let regionName = "全国";
 
-  // まず選択された都道府県に価格情報があるかを探す
   if (pref) {
-    // 選択された都道府県の価格情報を持つ最初の店舗を探す
-    // JSONデータで価格情報がネストされていないため、直接アクセス
-    relevantPriceData = data.find(d => d.都道府県 === pref && d.ベーシック !== undefined && !isNaN(d.ベーシック));
-  } 
-  
-  // 選択された都道府県に価格情報がない、または都道府県が選択されていない場合、
-  // "全国"の価格情報を持つエントリを探す（もしあれば）
-  if (!relevantPriceData) {
-      relevantPriceData = data.find(d => d.都道府県 === "全国" && d.ベーシック !== undefined && !isNaN(d.ベーシック));
+    // 都道府県が選択されている場合、まず都道府県固有の価格を探す
+    displayPrice = priceDataByRegion.find(p => p.種別 === "都道府県" && p.名称 === pref);
+    regionName = pref;
+    if (!displayPrice) {
+      // 都道府県固有の価格がなければ、その都道府県に紐づくエリアの価格を探す
+      const selectedStoreInPref = data.find(d => d.都道府県 === pref);
+      if (selectedStoreInPref && selectedStoreInPref.エリア) {
+        displayPrice = priceDataByRegion.find(p => p.種別 === "エリア" && p.名称 === selectedStoreInPref.エリア);
+        regionName = selectedStoreInPref.エリア;
+      }
+    }
+  } else if (area) {
+      // 都道府県が選択されておらず、エリアが選択されている場合、エリア価格を探す
+      displayPrice = priceDataByRegion.find(p => p.種別 === "エリア" && p.名称 === area);
+      regionName = area;
   }
 
+  // 都道府県やエリアの価格が見つからなければ、全国価格を探す
+  if (!displayPrice) {
+    displayPrice = priceDataByRegion.find(p => p.種別 === "全国" && p.名称 === "全国");
+    // regionNameはすでに"全国"に初期化されている
+  }
 
-  if (relevantPriceData && relevantPriceData.ベーシック !== undefined && !isNaN(relevantPriceData.ベーシック)) {
-    // マルチのみと3面のみがJSONデータで混在しているため、両方を考慮した表示名にしています。
-    // データ構造を統一できるのであれば、統一することを推奨します。
-    const multiOnlyPrice = relevantPriceData["マルチのみ"] !== undefined && !isNaN(relevantPriceData["マルチのみ"]) ? relevantPriceData["マルチのみ"] : (relevantPriceData["3面のみ"] !== undefined && !isNaN(relevantPriceData["3面のみ"]) ? relevantPriceData["3面のみ"] : null);
+  if (displayPrice && displayPrice.価格情報) {
+    const priceInfo = displayPrice.価格情報;
+    // 'マルチのみ'と'3面のみ'のキーが混在しているため、両方を考慮して表示する
+    const multiOnlyPrice = priceInfo['マルチのみ'] !== undefined ? priceInfo['マルチのみ'] : (priceInfo['3面のみ'] !== undefined ? priceInfo['3面のみ'] : 'N/A');
 
-    priceDiv.innerHTML = `<b>${pref || "全国"}の価格情報：</b><br>
-      ベーシック ${formatPrice(relevantPriceData.ベーシック)}円 ／ 
+    priceDiv.innerHTML = `<b>${regionName}の価格：</b><br>
+      ベーシック ${formatPrice(priceInfo.ベーシック)}円 ／ 
       マルチのみ/3面のみ ${formatPrice(multiOnlyPrice)}円 ／ 
-      POS静止画 ${formatPrice(relevantPriceData.POS静止画)}円 ／ 
-      POS動画 ${formatPrice(relevantPriceData.POS動画)}円`;
+      POS静止画 ${formatPrice(priceInfo.POS静止画)}円 ／ 
+      POS動画 ${formatPrice(priceInfo.POS動画)}円`;
   } else {
-    // 都道府県が選択されているが価格情報がない場合、または全国の価格情報もない場合
-    priceDiv.textContent = pref ? `「${pref}」の価格情報はありません。` : "全国の価格情報はありません。";
+    priceDiv.textContent = "価格情報はありません。";
   }
 }
 
-// 価格をフォーマットするヘルパー関数
 function formatPrice(price) {
-    return price !== null && !isNaN(price) ? price.toLocaleString() : 'N/A';
+    return isNaN(price) || price === null ? 'N/A' : price.toLocaleString();
 }
 
 function filterAndRender() {
   const pref = document.getElementById("prefectureSelect").value;
   const city = document.getElementById("citySelect").value;
   const area = document.getElementById("areaSelect").value;
-  const keyword = document.getElementById("searchInput").value.trim().toLowerCase(); // キーワードを小文字に変換
+  const keyword = document.getElementById("searchInput").value.trim();
 
   let filtered = storeData;
 
   if (pref) filtered = filtered.filter(d => d.都道府県 === pref);
   if (city) filtered = filtered.filter(d => d.市区町村 === city);
   if (area) filtered = filtered.filter(d => d.エリア === area);
-  // キーワード検索を大文字小文字を区別しないように修正
-  if (keyword) filtered = filtered.filter(d => d.店名.toLowerCase().includes(keyword));
+  if (keyword) filtered = filtered.filter(d => d.店名.includes(keyword) || d.住所.includes(keyword)); // 店舗名だけでなく住所も検索対象に含める
 
   renderTable(filtered);
 }
@@ -115,14 +130,10 @@ function renderTable(data) {
   const tbody = document.getElementById("resultBody");
   const countDiv = document.getElementById("resultCount");
   tbody.innerHTML = "";
-  if (data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3">該当する店舗が見つかりませんでした。</td></tr>';
-  } else {
-    data.forEach(d => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${d.サイネージ}</td><td>${d.店名}</td><td>${d.住所}</td>`;
-      tbody.appendChild(tr);
-    });
-  }
-  countDiv.textContent = `該当件数：${data.length}件`;
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${d.サイネージ}</td><td>${d.店名}</td><td>${d.住所}</td>`;
+    tbody.appendChild(tr);
+  });
+  countDiv.textContent = `該当件数：${data.length}`;
 }
