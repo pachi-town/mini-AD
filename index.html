@@ -2,38 +2,27 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>店舗検索とセグメント表示</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>店舗検索とセグメント表示</h1>
   <div class="controls">
     <select id="prefectureSelect"><option value="">都道府県</option></select>
     <select id="citySelect"><option value="">市区町村</option></select>
-    <select id="areaSelect">
-      <option value="">エリア</option>
-      <option value="東北">東北</option>
-      <option value="関東">関東</option>
-      <option value="東海">東海</option>
-      <option value="近畿北陸">近畿北陸</option>
-      <option value="四国">四国</option>
-      <option value="九州">九州</option>
-    </select>
-    <input type="text" id="storeNameInput" placeholder="店舗名を入力">
+    <select id="areaSelect"><option value="">エリア</option></select>
+    <input type="text" id="searchInput" placeholder="店舗名を入力" />
     <button id="searchButton">検索</button>
   </div>
-
   <div id="priceArea"></div>
-  <div id="resultCount">該当件数：</div>
-
+  <div id="resultCount"></div>
   <table>
     <thead>
       <tr><th>サイネージ</th><th>店舗名</th><th>住所</th></tr>
     </thead>
-    <tbody id="storeTable"></tbody>
+    <tbody id="resultBody"></tbody>
   </table>
-
   <script src="script.js"></script>
 </body>
 </html>

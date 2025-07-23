@@ -1,18 +1,18 @@
-document.addEventListener("DOMContentLoaded", async () => {
-  const storeTable = document.getElementById("storeTable");
-  const resultCount = document.getElementById("resultCount");
-  const priceArea = document.getElementById("priceArea");
+let storeData = [];
 
+fetch('store_with_price.json')
+  .then(response => response.json())
+  .then(data => {
+    storeData = data;
+    populateSelectors(data);
+    renderTable(data);
+    updatePriceDisplay(data);
+  });
+
+function populateSelectors(data) {
+  const prefectures = [...new Set(data.map(item => item.都道府県))];
   const prefectureSelect = document.getElementById("prefectureSelect");
-  const citySelect = document.getElementById("citySelect");
-  const areaSelect = document.getElementById("areaSelect");
-  const storeNameInput = document.getElementById("storeNameInput");
-  const searchButton = document.getElementById("searchButton");
-
-  const storeData = await fetch("store_with_price.json").then(res => res.json());
-
-  const allPrefectures = [...new Set(storeData.map(store => store.prefecture))];
-  allPrefectures.forEach(pref => {
+  prefectures.forEach(pref => {
     const option = document.createElement("option");
     option.value = option.textContent = pref;
     prefectureSelect.appendChild(option);
@@ -20,52 +20,77 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   prefectureSelect.addEventListener("change", () => {
     const selected = prefectureSelect.value;
+    const cities = [...new Set(data.filter(d => d.都道府県 === selected).map(d => d.市区町村))];
+    const citySelect = document.getElementById("citySelect");
     citySelect.innerHTML = '<option value="">市区町村</option>';
-    const cities = [...new Set(storeData.filter(s => s.prefecture === selected).map(s => s.city))];
     cities.forEach(city => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = city;
       citySelect.appendChild(opt);
     });
+
+    const areas = [...new Set(data.filter(d => d.都道府県 === selected).map(d => d.エリア))];
+    const areaSelect = document.getElementById("areaSelect");
+    areaSelect.innerHTML = '<option value="">エリア</option>';
+    areas.forEach(area => {
+      const opt = document.createElement("option");
+      opt.value = opt.textContent = area;
+      areaSelect.appendChild(opt);
+    });
+
+    updatePriceDisplay(data);
+    filterAndRender();
   });
 
-  function renderTable(data) {
-    storeTable.innerHTML = "";
-    data.forEach(store => {
-      const row = document.createElement("tr");
-      row.innerHTML = `<td>${store.signage}</td><td>${store.name}</td><td>${store.address}</td>`;
-      storeTable.appendChild(row);
-    });
+  document.getElementById("searchButton").addEventListener("click", filterAndRender);
+}
+
+function updatePriceDisplay(data) {
+  const pref = document.getElementById("prefectureSelect").value;
+  const priceDiv = document.getElementById("priceArea");
+  let price = null;
+
+  if (pref) {
+    price = data.find(d => d.都道府県 === pref && d.価格情報);
+  } else {
+    price = data.find(d => d.都道府県 === "全国" && d.価格情報);
   }
 
-  function renderPrice(data) {
-    if (!data.length) return priceArea.innerHTML = "";
-    const sample = data[0];
-    if (sample.prefecture === "全国") {
-      priceArea.innerHTML = `<strong>全国：</strong> ベーシック ${sample.basic}円 ／ マルチのみ ${sample.multi}円 ／ POS静止画 ${sample.pos_static}円 ／ POS動画 ${sample.pos_video}円`;
-    } else {
-      priceArea.innerHTML = `<strong>${sample.prefecture}：</strong> ベーシック ${sample.basic}円 ／ マルチのみ ${sample.multi}円 ／ POS静止画 ${sample.pos_static}円 ／ POS動画 ${sample.pos_video}円`;
-    }
+  if (price && price.価格情報) {
+    priceDiv.innerHTML = `<b>${pref || "全国"}：</b>
+      ベーシック ${price.価格情報.ベーシック}円 ／ 
+      マルチのみ ${price.価格情報.マルチのみ}円 ／ 
+      POS静止画 ${price.価格情報.POS静止画}円 ／ 
+      POS動画 ${price.価格情報.POS動画}円`;
+  } else {
+    priceDiv.textContent = "";
   }
+}
 
-  function getFilteredStores() {
-    const pref = prefectureSelect.value;
-    const city = citySelect.value;
-    const area = areaSelect.value;
-    const name = storeNameInput.value.trim();
+function filterAndRender() {
+  const pref = document.getElementById("prefectureSelect").value;
+  const city = document.getElementById("citySelect").value;
+  const area = document.getElementById("areaSelect").value;
+  const keyword = document.getElementById("searchInput").value.trim();
 
-    return storeData.filter(store => {
-      return (!pref || store.prefecture === pref) &&
-             (!city || store.city === city) &&
-             (!area || store.area === area) &&
-             (!name || store.name.includes(name));
-    });
-  }
+  let filtered = storeData;
 
-  searchButton.addEventListener("click", () => {
-    const results = getFilteredStores();
-    renderTable(results);
-    renderPrice(results);
-    resultCount.textContent = `${results.length}件の店舗が見つかりました`;
+  if (pref) filtered = filtered.filter(d => d.都道府県 === pref);
+  if (city) filtered = filtered.filter(d => d.市区町村 === city);
+  if (area) filtered = filtered.filter(d => d.エリア === area);
+  if (keyword) filtered = filtered.filter(d => d.店名.includes(keyword));
+
+  renderTable(filtered);
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById("resultBody");
+  const countDiv = document.getElementById("resultCount");
+  tbody.innerHTML = "";
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${d.サイネージ}</td><td>${d.店名}</td><td>${d.住所}</td>`;
+    tbody.appendChild(tr);
   });
-});
+  countDiv.textContent = `該当件数：${data.length}`;
+}
