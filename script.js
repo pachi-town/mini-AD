@@ -104,3 +104,7 @@ window.addEventListener("DOMContentLoaded", () => {
     ths[4].textContent = "POSレジ動画15秒";
   }
 });
+
+
+// Dummy timestamp to force cache busting
+function __cache_bust_20250724163925() { return '20250724163925'; }
