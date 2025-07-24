@@ -77,7 +77,7 @@ function renderResults() {
   const priceBody = document.getElementById("priceTableBody");
   priceBody.innerHTML = "";
 
-  function createRow(label, price) {
+  function createRow(label, price, emphasize = false) {
     if (!price) return;
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -87,10 +87,12 @@ function renderResults() {
       <td>${price["POS静止画"].toLocaleString()}円</td>
       <td>${price["POS動画"].toLocaleString()}円</td>
     `;
+    if (emphasize) tr.style.fontSize = "1.3rem";
     priceBody.appendChild(tr);
   }
 
-  createRow("全国", nationalPrice);
+  // 表示順序: 都道府県 > エリア > 全国
+  if (prefPrice) createRow(pref, prefPrice, true);
   if (areaPrice) createRow(aliasedArea, areaPrice);
-  if (prefPrice) createRow(pref, prefPrice);
+  createRow("全国", nationalPrice);
 }
