@@ -112,7 +112,7 @@ function __cache_bust_20250724163925() { return '20250724163925'; }
 
 function populateAreaPrefecture() {
   const areaSelect = document.getElementById("areaSelect");
-  const prefSelect = document.getElementById("pref");
+  const prefSelect = document.getElementById("prefectureSelect");
   const areas = [...new Set(storeData.map(store => store.エリア))].sort();
 
   // populate area
