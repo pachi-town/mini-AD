@@ -90,7 +90,7 @@ function renderResults() {
   }
 
   if (prefPrice) createRow(pref, prefPrice, true);
-  if (areaPrice) createRow(aliasedArea, areaPrice);
+  if (pref || city) { if (areaPrice) createRow(aliasedArea, areaPrice); }
   createRow("全国", nationalPrice);
 }
 
