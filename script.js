@@ -15,6 +15,7 @@ Promise.all([
   priceData = prices;
   populateSelectors();
   document.getElementById("searchBtn").addEventListener("click", renderResults);
+document.getElementById("storeSummary").style.display = "none";
 });
 
 function populateSelectors() {
@@ -63,7 +64,7 @@ function renderResults() {
     if (type.includes("マルチ")) multi++;
     else if (type.includes("1面")) single++;
   });
-  document.getElementById("storeSummary").textContent = `マルチディスプレイ設置店舗：${multi}件 ／ 1面のみ設置店舗：${single}件 ／ 設置店舗合計：${results.length}件`;
+  const summary = document.getElementById("storeSummary"); summary.style.display = "block"; summary.textContent = `マルチディスプレイ設置店舗：${multi}件 ／ 1面のみ設置店舗：${single}件 ／ 設置店舗合計：${results.length}件`;
 
   const area = results[0]?.エリア;
   const aliasedArea = AREA_ALIAS[area] || area;
