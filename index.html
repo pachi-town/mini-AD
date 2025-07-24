@@ -2,70 +2,49 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>店舗検索</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>ミニストップAD サイネージ設置店舗検索</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>サイネージ設置店舗検索</h1>
-
-  <div class="selector">
-    <label>エリア：
-      <select id="areaSelect">
-        <option value="">選択</option>
-      </select>
-    </label>
-    <label>都道府県：
-      <select id="prefectureSelect">
-        <option value="">選択</option>
-      </select>
-    </label>
-    <label>市区町村：
-      <select id="citySelect">
-        <option value="">選択</option>
-      </select>
-    </label>
+  <h1>ミニストップAD サイネージ設置店舗検索</h1>
+  <div class="search-panel">
+    <label>エリア</label><select id="areaSelect"><option value="">選択</option></select>
+    <label>都道府県</label><select id="prefectureSelect"><option value="">選択</option></select>
+    <label>市区町村</label><select id="citySelect"><option value="">選択</option></select>
     <button id="searchBtn">検索</button>
   </div>
 
-  <div id="storeCount" class="store-count"></div>
+  <div class="summary-panel">
+    <h2>店舗件数</h2>
+    <div id="storeSummary" style="display:none;">マルチ：0件 ／ 1面：0件 ／ 総計：0店舗</div>
+  </div>
 
-  <div class="price-info">
-    <h2>価格情報 <span style="font-size: 0.7em;">（価格は1週間料金となります／税別です）</span></h2>
-    <table class="price-table">
+  <div class="price-panel">
+    <h2>価格情報 <span class="price-note">（価格は1週間料金となります／税別）</span></h2>
+    <table>
       <thead>
         <tr>
-          <th>掲載範囲</th>
+          <th class="center">掲載範囲</th>
           <th>マルチ＋1面の店舗に掲載</th>
           <th>マルチディスプレイ設置店舗にのみ掲載</th>
           <th>POSレジ静止画15秒</th>
           <th>POSレジ動画15秒</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>都道府県価格</td>
-          <td id="basicPrice">-</td>
-          <td id="multiOnlyPrice">-</td>
-          <td id="stillPrice">-</td>
-          <td id="videoPrice">-</td>
-        </tr>
-      </tbody>
+      <tbody id="priceTableBody"></tbody>
     </table>
   </div>
 
-  <table id="resultTable" class="result-table">
-    <thead>
-      <tr>
-        <th>サイネージ</th>
-        <th>店舗名</th>
-        <th>住所</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- 結果出力 -->
-    </tbody>
-  </table>
+  <div class="result-panel">
+    <h2>検索結果</h2>
+    <table>
+      <thead>
+        <tr><th class="center">サイネージ</th><th class="center">店舗名</th><th class="center">住所</th></tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+  </div>
 
   <script src="script.js"></script>
 </body>
