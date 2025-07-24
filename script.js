@@ -88,3 +88,39 @@ function renderResults() {
     document.getElementById("priceInfo").innerHTML = '';
   }
 }
+
+
+// Add counts to dropdowns
+document.getElementById("prefectureSelect").addEventListener("change", () => {
+  const sel = document.getElementById("prefectureSelect");
+  const val = sel.value;
+  const citySel = document.getElementById("citySelect");
+  const cities = Array.from(citySel.options).length - 1;
+  document.getElementById("prefCount").textContent = val ? `（${sel.options.length - 1}件）` : "";
+  document.getElementById("cityCount").textContent = val && cities > 0 ? `（${cities}件）` : "";
+});
+
+function updateStoreSummary(results) {
+  let multi = 0, single = 0;
+  results.forEach(s => {
+    const type = s.サイネージ || "";
+    if (type.includes("マルチ")) multi++;
+    else if (type.includes("1面")) single++;
+  });
+  const total = results.length;
+  document.getElementById("storeSummary").textContent = `マルチ：${multi}件 ／ 1面：${single}件 ／ 総計：${total}店舗`;
+}
+
+const originalRenderResults = renderResults;
+renderResults = function () {
+  originalRenderResults();
+  const pref = document.getElementById("prefectureSelect").value;
+  const city = document.getElementById("citySelect").value;
+  const keyword = document.getElementById("searchInput")?.value.trim() ?? "";
+  let results = storeData.filter(s =>
+    (!pref || s.都道府県 === pref) &&
+    (!city || s.市区町村 === city) &&
+    (!keyword || s.店名.includes(keyword))
+  );
+  updateStoreSummary(results);
+};
