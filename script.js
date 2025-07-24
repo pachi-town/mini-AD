@@ -48,7 +48,6 @@ function renderResults() {
     (!city || s.市区町村 === city)
   );
 
-  // 検索結果描画
   const tbody = document.getElementById("resultBody");
   tbody.innerHTML = "";
   results.forEach(s => {
@@ -58,7 +57,6 @@ function renderResults() {
     tbody.appendChild(tr);
   });
 
-  // 店舗件数集計
   let multi = 0, single = 0;
   results.forEach(s => {
     const type = s.サイネージ || "";
@@ -67,7 +65,6 @@ function renderResults() {
   });
   document.getElementById("storeSummary").textContent = `マルチ：${multi}件 ／ 1面：${single}件 ／ 総計：${results.length}店舗`;
 
-  // 金額情報表示
   const area = results[0]?.エリア;
   const aliasedArea = AREA_ALIAS[area] || area;
   const prefPrice = priceData[pref];
@@ -87,12 +84,22 @@ function renderResults() {
       <td>${price["POS静止画"].toLocaleString()}円</td>
       <td>${price["POS動画"].toLocaleString()}円</td>
     `;
-    if (emphasize) tr.style.fontSize = "1.3rem";
+    if (emphasize) tr.classList.add("prefecture-row");
     priceBody.appendChild(tr);
   }
 
-  // 表示順序: 都道府県 > エリア > 全国
   if (prefPrice) createRow(pref, prefPrice, true);
   if (areaPrice) createRow(aliasedArea, areaPrice);
   createRow("全国", nationalPrice);
 }
+
+// ヘッダー表記の修正をDOM描画後に手動で変更
+window.addEventListener("DOMContentLoaded", () => {
+  const ths = document.querySelectorAll(".price-panel table thead th");
+  if (ths.length >= 5) {
+    ths[1].textContent = "マルチ＋1面の店舗に掲載";
+    ths[2].textContent = "マルチディスプレイ設置店舗にのみ掲載";
+    ths[3].textContent = "POSレジ静止画15秒";
+    ths[4].textContent = "POSレジ動画15秒";
+  }
+});
