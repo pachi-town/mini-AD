@@ -42,7 +42,8 @@ function populateSelectors() {
 function renderResults() {
   const pref = document.getElementById("prefectureSelect").value;
   const city = document.getElementById("citySelect").value;
-  const keyword = document.getElementById("searchInput").value.trim();
+  const keywordEl = document.getElementById("searchInput");
+  const keyword = keywordEl ? keywordEl.value.trim() : "";
 
   let results = storeData.filter(s =>
     (!pref || s.都道府県 === pref) &&
@@ -116,7 +117,8 @@ renderResults = function () {
   originalRenderResults();
   const pref = document.getElementById("prefectureSelect").value;
   const city = document.getElementById("citySelect").value;
-  const keyword = document.getElementById("searchInput")?.value.trim() ?? "";
+  const keywordEl = document.getElementById("searchInput");
+  const keyword = keywordEl ? keywordEl.value.trim() : "";
   let results = storeData.filter(s =>
     (!pref || s.都道府県 === pref) &&
     (!city || s.市区町村 === city) &&
