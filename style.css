@@ -82,3 +82,17 @@ th.center {
 .price-panel table th:nth-child(5) {
   text-align: center !important;
 }
+
+#storeSummary {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+}
+#storeSummary span.label {
+  font-size: 1rem;
+  font-weight: normal;
+}
+#storeSummary span.count {
+  font-size: 2rem;
+  font-weight: bold;
+}
