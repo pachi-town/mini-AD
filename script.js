@@ -108,3 +108,33 @@ window.addEventListener("DOMContentLoaded", () => {
 
 // Dummy timestamp to force cache busting
 function __cache_bust_20250724163925() { return '20250724163925'; }
+
+
+function populateAreaPrefecture() {
+  const areaSelect = document.getElementById("areaSelect");
+  const prefSelect = document.getElementById("pref");
+  const areas = [...new Set(storeData.map(store => store.エリア))].sort();
+
+  // populate area
+  areas.forEach(area => {
+    const opt = document.createElement("option");
+    opt.value = area;
+    opt.textContent = area;
+    areaSelect.appendChild(opt);
+  });
+
+  areaSelect.addEventListener("change", () => {
+    const selectedArea = areaSelect.value;
+    prefSelect.innerHTML = '<option value="">選択</option>';
+    const filteredPrefs = selectedArea
+      ? [...new Set(storeData.filter(store => store.エリア === selectedArea).map(store => store.都道府県))].sort()
+      : [...new Set(storeData.map(store => store.都道府県))].sort();
+
+    filteredPrefs.forEach(pref => {
+      const opt = document.createElement("option");
+      opt.value = pref;
+      opt.textContent = pref;
+      prefSelect.appendChild(opt);
+    });
+  });
+}
