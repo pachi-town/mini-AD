@@ -75,3 +75,10 @@ th.center {
 .price-panel table td:nth-child(5) {
   text-align: center;
 }
+
+.price-panel table th:nth-child(2),
+.price-panel table th:nth-child(3),
+.price-panel table th:nth-child(4),
+.price-panel table th:nth-child(5) {
+  text-align: center !important;
+}
