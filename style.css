@@ -96,3 +96,7 @@ th.center {
   font-size: 2rem;
   font-weight: bold;
 }
+
+#storeSummary .count + .label {
+  padding-left: 0.4em;
+}
