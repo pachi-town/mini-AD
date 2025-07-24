@@ -63,7 +63,7 @@ function renderResults() {
     if (type.includes("マルチ")) multi++;
     else if (type.includes("1面")) single++;
   });
-  document.getElementById("storeSummary").textContent = `マルチ：${multi}件 ／ 1面：${single}件 ／ 総計：${results.length}店舗`;
+  document.getElementById("storeSummary").textContent = `マルチ：マルチディスプレイ設置店舗（${multi}件） ／ 1面：１面のみ設置店舗（${single}件） ／ 総計：設置店舗合計（${results.length}件）`;
 
   const area = results[0]?.エリア;
   const aliasedArea = AREA_ALIAS[area] || area;
