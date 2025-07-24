@@ -88,3 +88,5 @@ function updatePrices(data) {
 }
 
 window.onload = fetchData;
+
+document.getElementById("searchBtn").addEventListener("click", filterStores);
