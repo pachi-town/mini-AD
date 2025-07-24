@@ -80,10 +80,10 @@ function renderResults() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${label}</td>
-      <td>${price.ベーシック.toLocaleString()}円</td>
-      <td>${price["マルチのみ"].toLocaleString()}円</td>
-      <td>${price["POS静止画"].toLocaleString()}円</td>
-      <td>${price["POS動画"].toLocaleString()}円</td>
+      <td>${price.ベーシック === "対象外" ? "対象外" : price.ベーシック.toLocaleString() + "円"}</td>
+      <td>${price["マルチのみ"] === "対象外" ? "対象外" : price["マルチのみ"].toLocaleString() + "円"}</td>
+      <td>${price["POS静止画"] === "対象外" ? "対象外" : price["POS静止画"].toLocaleString() + "円"}</td>
+      <td>${price["POS動画"] === "対象外" ? "対象外" : price["POS動画"].toLocaleString() + "円"}</td>
     `;
     if (emphasize) tr.classList.add("prefecture-row");
     priceBody.appendChild(tr);
