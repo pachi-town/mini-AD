@@ -58,3 +58,9 @@ th {
   font-weight: bold;
   color: #000;
 }
+
+.price-note {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: normal;
+}
