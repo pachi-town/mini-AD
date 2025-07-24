@@ -18,7 +18,7 @@ Promise.all([
 });
 
 function populateSelectors() {
-  const prefs = [...new Set(storeData.map(s => s.都道府県))];
+  const prefs = [...new Set(storeData.map(s => s.都道府県))].sort();
   const selPref = document.getElementById("prefectureSelect");
   prefs.forEach(p => {
     const opt = document.createElement("option");
@@ -28,9 +28,9 @@ function populateSelectors() {
 
   selPref.addEventListener("change", () => {
     const selected = selPref.value;
-    const cities = [...new Set(storeData.filter(s => s.都道府県 === selected).map(s => s.市区町村))];
+    const cities = [...new Set(storeData.filter(s => s.都道府県 === selected).map(s => s.市区町村))].sort();
     const citySel = document.getElementById("citySelect");
-    citySel.innerHTML = '<option value="">市区町村</option>';
+    citySel.innerHTML = '<option value="">選択</option>';
     cities.forEach(c => {
       const opt = document.createElement("option");
       opt.value = opt.textContent = c;
@@ -42,15 +42,13 @@ function populateSelectors() {
 function renderResults() {
   const pref = document.getElementById("prefectureSelect").value;
   const city = document.getElementById("citySelect").value;
-  const keywordEl = document.getElementById("searchInput");
-  const keyword = keywordEl ? keywordEl.value.trim() : "";
 
   let results = storeData.filter(s =>
     (!pref || s.都道府県 === pref) &&
-    (!city || s.市区町村 === city) &&
-    (!keyword || s.店名.includes(keyword))
+    (!city || s.市区町村 === city)
   );
 
+  // 検索結果描画
   const tbody = document.getElementById("resultBody");
   tbody.innerHTML = "";
   results.forEach(s => {
@@ -60,69 +58,39 @@ function renderResults() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById("resultCount").textContent = `該当件数：${results.length}`;
-
-  // 価格ロジック（都道府県→エリア→全国）
-  const area = results[0]?.エリア;
-  const aliasedArea = AREA_ALIAS[area] || area;
-
-  const prefPrice = priceData[pref];
-  const areaPrice = priceData[aliasedArea];
-  const nationalPrice = priceData["全国"];
-  const zone = pref || aliasedArea || '全国';
-
-  if (true) {
-    
-    let html = '<div><strong>全国：</strong> ベーシック ' + nationalPrice.ベーシック.toLocaleString() + '円 ／ マルチのみ ' + nationalPrice["マルチのみ"].toLocaleString() + '円 ／ POS静止画 ' + nationalPrice["POS静止画"].toLocaleString() + '円 ／ POS動画 ' + nationalPrice["POS動画"].toLocaleString() + '円</div>';
-
-    if (areaPrice) {
-      html += '<div><strong>' + aliasedArea + '：</strong> ベーシック ' + areaPrice.ベーシック.toLocaleString() + '円 ／ マルチのみ ' + areaPrice["マルチのみ"].toLocaleString() + '円 ／ POS静止画 ' + areaPrice["POS静止画"].toLocaleString() + '円 ／ POS動画 ' + areaPrice["POS動画"].toLocaleString() + '円</div>';
-    }
-
-    if (prefPrice) {
-      html += '<div><strong>' + pref + '：</strong> ベーシック ' + prefPrice.ベーシック.toLocaleString() + '円 ／ マルチのみ ' + prefPrice["マルチのみ"].toLocaleString() + '円 ／ POS静止画 ' + prefPrice["POS静止画"].toLocaleString() + '円 ／ POS動画 ' + prefPrice["POS動画"].toLocaleString() + '円</div>';
-    }
-
-    document.getElementById("priceInfo").innerHTML = html;
-
-  } else {
-    document.getElementById("priceInfo").innerHTML = '';
-  }
-}
-
-
-// Add counts to dropdowns
-document.getElementById("prefectureSelect").addEventListener("change", () => {
-  const sel = document.getElementById("prefectureSelect");
-  const val = sel.value;
-  const citySel = document.getElementById("citySelect");
-  const cities = Array.from(citySel.options).length - 1;
-  document.getElementById("prefCount").textContent = val ? `（${sel.options.length - 1}件）` : "";
-  document.getElementById("cityCount").textContent = val && cities > 0 ? `（${cities}件）` : "";
-});
-
-function updateStoreSummary(results) {
+  // 店舗件数集計
   let multi = 0, single = 0;
   results.forEach(s => {
     const type = s.サイネージ || "";
     if (type.includes("マルチ")) multi++;
     else if (type.includes("1面")) single++;
   });
-  const total = results.length;
-  document.getElementById("storeSummary").textContent = `マルチ：${multi}件 ／ 1面：${single}件 ／ 総計：${total}店舗`;
-}
+  document.getElementById("storeSummary").textContent = `マルチ：${multi}件 ／ 1面：${single}件 ／ 総計：${results.length}店舗`;
 
-const originalRenderResults = renderResults;
-renderResults = function () {
-  originalRenderResults();
-  const pref = document.getElementById("prefectureSelect").value;
-  const city = document.getElementById("citySelect").value;
-  const keywordEl = document.getElementById("searchInput");
-  const keyword = keywordEl ? keywordEl.value.trim() : "";
-  let results = storeData.filter(s =>
-    (!pref || s.都道府県 === pref) &&
-    (!city || s.市区町村 === city) &&
-    (!keyword || s.店名.includes(keyword))
-  );
-  updateStoreSummary(results);
-};
+  // 金額情報表示
+  const area = results[0]?.エリア;
+  const aliasedArea = AREA_ALIAS[area] || area;
+  const prefPrice = priceData[pref];
+  const areaPrice = priceData[aliasedArea];
+  const nationalPrice = priceData["全国"];
+
+  const priceBody = document.getElementById("priceTableBody");
+  priceBody.innerHTML = "";
+
+  function createRow(label, price) {
+    if (!price) return;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td>${price.ベーシック.toLocaleString()}円</td>
+      <td>${price["マルチのみ"].toLocaleString()}円</td>
+      <td>${price["POS静止画"].toLocaleString()}円</td>
+      <td>${price["POS動画"].toLocaleString()}円</td>
+    `;
+    priceBody.appendChild(tr);
+  }
+
+  createRow("全国", nationalPrice);
+  if (areaPrice) createRow(aliasedArea, areaPrice);
+  if (prefPrice) createRow(pref, prefPrice);
+}
