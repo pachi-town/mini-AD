@@ -66,6 +66,16 @@ function renderResults() {
     (!city || s.市区町村 === city)
   );
 
+  // 並び順調整：マルチ → 1面 → その他
+  results.sort((a, b) => {
+    const getWeight = (signage) => {
+      if (signage.includes("マルチ")) return 0;
+      if (signage.includes("1面")) return 1;
+      return 2;
+    };
+    return getWeight(a.サイネージ) - getWeight(b.サイネージ);
+  });
+
   const tbody = document.getElementById("resultBody");
   tbody.innerHTML = "";
   results.forEach(s => {
