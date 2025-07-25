@@ -8,9 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultBody = document.getElementById("resultBody");
   const priceTableBody = document.getElementById("priceTableBody");
 
-  // 親要素の取得
-  const priceInfoSection = document.querySelector('h2:nth-of-type(1)'); // 価格情報のh2
-  const searchResultSection = document.querySelector('h2:nth-of-type(2)'); // 検索結果のh2
+  // 親要素の取得 (表示/非表示制御のため)
+  const priceInfoSection = document.querySelector('h2:nth-of-type(1)'); 
+  const priceTable = priceTableBody.closest('table');
+  const searchResultSection = document.querySelector('h2:nth-of-type(2)');
+  const searchResultTable = resultBody.closest('table');
 
   // 全ての店舗データと価格データを格納する変数
   let allStoresRaw = []; // 読み込んだそのままの店舗データ
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // エリアと都道府県の対応関係
   const areas = {
-    "北海道": ["北海道"], // 北海道を明示的に追加
+    "北海道": ["北海道"], 
     "東北": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
     "関東": ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"],
     "中部": ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"],
@@ -36,15 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 全ての都道府県のリストをフラットに作成（重複なし）
-  const allPrefecturesList = [...new Set(Object.values(areas).flat())];
-  // 北海道がareasオブジェクトから正しく取得されていることを確認し、もしなければ追加
-  if (!allPrefecturesList.includes("北海道")) {
-    allPrefecturesList.unshift("北海道");
-  }
-
+  // stores.jsonとprices_by_region.jsonに存在する都道府県のみを抽出
+  let availablePrefectures = new Set();
 
   // --- データフェッチング ---
-  // stores.json と prices_by_region.json を同時に読み込む
   Promise.all([
       fetch("stores.json").then(res => {
         if (!res.ok) throw new Error(`stores.json HTTP error! status: ${res.status}`);
@@ -58,19 +55,34 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(([stores, prices]) => {
       allStoresRaw = stores;
       allPrices = prices;
+
+      // 利用可能な都道府県をstores.jsonから抽出
+      allStoresRaw.forEach(store => {
+        availablePrefectures.add(store.都道府県);
+      });
+      // prices_by_region.jsonからも都道府県を抽出（両方に存在するものが対象）
+      Object.keys(allPrices).forEach(region => {
+          if (region.endsWith('県') || region === '北海道') { // 都道府県名の判定を強化
+              availablePrefectures.add(region);
+          }
+      });
+      // NaNを削除
+      availablePrefectures.delete('NaN');
+
       structureStores(allStoresRaw); // 店舗データを構造化
       populateAreaSelect(); // エリアドロップダウンを初期化
       populatePrefectureSelect(""); // 都道府県ドロップダウンを初期化（全表示）
-      // 初期状態では店舗一覧と価格情報を非表示にする
-      hideAllResults();
+
+      // 初期状態では店舗一覧と価格情報を非表示にする (タイトルは表示)
+      hideAllContent();
     })
     .catch(err => {
       console.error("データの読み込みに失敗しました:", err);
       storeSummary.innerHTML = "<p class='error-message'>データの読み込みに失敗しました。ファイルが正しいか確認してください。</p>";
       resultBody.innerHTML = '<tr><td colspan="3">データの読み込みに失敗しました。</td></tr>';
       priceTableBody.innerHTML = '<tr><td colspan="5">価格データの読み込みに失敗しました。</td></tr>';
-      // エラー時も非表示のまま
-      hideAllResults();
+      // エラー時もコンテンツは非表示のまま
+      hideAllContent();
     });
 
   // 店舗データを都道府県 -> 市区町村の構造に整理する関数
@@ -95,11 +107,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // エリア選択ドロップダウンを生成
   function populateAreaSelect() {
     areaSelect.innerHTML = '<option value="">エリア選択</option>';
+    // areasオブジェクトのキーを元に、ただし実データに存在する都道府県を含むエリアのみ追加
     Object.keys(areas).forEach(area => {
-      const option = document.createElement("option");
-      option.value = area;
-      option.textContent = area;
-      areaSelect.appendChild(option);
+        const relevantPrefecturesInArea = areas[area].filter(pref => availablePrefectures.has(pref));
+        if (relevantPrefecturesInArea.length > 0) {
+            const option = document.createElement("option");
+            option.value = area;
+            option.textContent = area;
+            areaSelect.appendChild(option);
+        }
     });
   }
 
@@ -109,11 +125,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let targetPrefectures = [];
 
     if (selectedArea) {
-      // エリアが選択されている場合、そのエリアに属する都道府県のみを表示
-      targetPrefectures = areas[selectedArea] || [];
+      // エリアが選択されている場合、そのエリアに属する、かつ利用可能な都道府県のみを表示
+      targetPrefectures = areas[selectedArea].filter(pref => availablePrefectures.has(pref)) || [];
     } else {
-      // エリアが選択されていない場合、全ての都道府県を表示
-      targetPrefectures = allPrefecturesList;
+      // エリアが選択されていない場合、全ての利用可能な都道府県を表示
+      targetPrefectures = Array.from(availablePrefectures);
     }
 
     // 都道府県名をソートして追加
@@ -163,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- 検索ボタンクリック時の処理 ---
   searchBtn.addEventListener("click", () => {
     performSearchAndPriceUpdate();
-    showAllResults(); // 検索ボタンが押されたら結果を表示
+    showAllContent(); // 検索ボタンが押されたら結果を表示
   });
 
   // 検索と価格表の更新をまとめて行う関数
@@ -175,18 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let filteredStores = [];
 
     // フィルタリングロジック
-    if (selectedCity) {
+    if (selectedCity && allStoresStructured[selectedPrefecture] && allStoresStructured[selectedPrefecture][selectedCity]) {
       // 市区町村が選択されている場合
-      if (allStoresStructured[selectedPrefecture] && allStoresStructured[selectedPrefecture][selectedCity]) {
-        filteredStores = allStoresStructured[selectedPrefecture][selectedCity];
-      }
-    } else if (selectedPrefecture) {
+      filteredStores = allStoresStructured[selectedPrefecture][selectedCity];
+    } else if (selectedPrefecture && allStoresStructured[selectedPrefecture]) {
       // 都道府県が選択されている場合（市区町村は未選択）
-      if (allStoresStructured[selectedPrefecture]) {
-        Object.values(allStoresStructured[selectedPrefecture]).forEach(cityStores => {
-          filteredStores = filteredStores.concat(cityStores);
-        });
-      }
+      Object.values(allStoresStructured[selectedPrefecture]).forEach(cityStores => {
+        filteredStores = filteredStores.concat(cityStores);
+      });
     } else if (selectedArea) {
       // エリアが選択されている場合（都道府県、市区町村は未選択）
       const prefecturesInArea = areas[selectedArea] || [];
@@ -215,7 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (a.サイネージ === "1面のみ" && b.サイネージ === "マルチディスプレイ") {
         return 1;
       }
-      return 0; // その他の場合は順序変更なし（同じサイネージタイプの場合）
+      // その他の場合は順序変更なし（同じサイネージタイプの場合、または未知のタイプの場合）
+      return 0;
     });
 
     displaySearchResults(filteredStores);
@@ -277,10 +290,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!priceData) return; // データがない場合は追加しない
 
       const row = document.createElement("tr");
+      // 都道府県名のリストを直接使用し、エリア名も含むように修正
+      const allDisplayableRegions = Array.from(availablePrefectures);
+      Object.keys(areas).forEach(areaKey => allDisplayableRegions.push(areaKey));
+      allDisplayableRegions.push("全国"); // 「全国」もリストに追加
+      
       if (isHighlighted) {
         row.classList.add("highlight-pref-price"); // 選択された都道府県の価格を強調
-      } else if (allPrefecturesList.includes(regionName) || Object.values(areas).flat().includes(regionName) || regionName === "北海道") { // 都道府県行のスタイル
-        row.classList.add("prefecture-row");
+      } else if (allDisplayableRegions.includes(regionName) && !isHighlighted) { 
+        // 価格表の行が「都道府県」または「エリア」である場合にクラスを追加
+        // ただし、ハイライトされている行にはつけない（重複スタイル防止）
+        // prices_by_region.json に直接存在するエリアキーも確認
+        const rawRegionName = Object.keys(areaDisplayMap).find(key => areaDisplayMap[key] === regionName) || regionName;
+        if (availablePrefectures.has(rawRegionName) || areas[rawRegionName] || rawRegionName === "全国") {
+            row.classList.add("prefecture-row");
+        }
       }
 
       // '対象外'の場合は文字列として表示、それ以外はtoLocaleString()で整形
@@ -301,13 +325,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const addedRegions = new Set(); // 重複行を避けるためのSet
 
     // 1. 全国価格を常に表示
-    if (allPrices["全国"] && !addedRegions.has("全国")) {
-      addPriceRow("全国", allPrices["全国"]);
+    if (allPrices["全国"]) { 
+      addPriceRow("全国", allPrices["全国"]); 
       addedRegions.add("全国");
     }
 
     // 2. 選択されたエリアの価格を表示（全国と重複しない場合）
-    // prices_by_region.jsonのキーとselectedAreaの対応を調整
     let areaPriceKey = selectedArea;
     if (selectedArea === "九州・沖縄") {
         areaPriceKey = "九州";
@@ -315,39 +338,38 @@ document.addEventListener("DOMContentLoaded", () => {
         areaPriceKey = "近畿北陸";
     }
     
-    // エリアが選択されている場合、その価格データを追加
-    // ただし、既に「全国」として追加されている場合はスキップ
+    // エリアが存在し、かつprices_by_region.jsonにそのキーが存在する場合
     if (selectedArea && allPrices[areaPriceKey] && !addedRegions.has(areaPriceKey)) {
         addPriceRow(selectedArea, allPrices[areaPriceKey]); // 表示名はselectedArea、データはareaPriceKeyで取得
         addedRegions.add(areaPriceKey);
     }
 
     // 3. 選択された都道府県の価格を表示し、強調
-    if (selectedPrefecture && allPrices[selectedPrefecture] && !addedRegions.has(selectedPrefecture)) {
-      addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true);
+    if (selectedPrefecture && allPrices[selectedPrefecture] && !addedRegions.has(selectedPrefecture)) { 
+      addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true); 
       addedRegions.add(selectedPrefecture);
     }
     
     // 4. その他の関連する都道府県の価格を表示
-    const prefecturesToConsider = selectedArea ? (areas[selectedArea] || []) : allPrefecturesList;
+    // 表示すべき都道府県のリストを決定 (選択エリアがあればその中の都道府県、なければ全ての利用可能な都道府県)
+    const prefecturesToDisplay = selectedArea ? 
+                                 (areas[selectedArea] ? areas[selectedArea].filter(p => availablePrefectures.has(p)) : []) :
+                                 Array.from(availablePrefectures);
     
-    // ソート前に重複を排除し、ユニークな都道府県のリストを作成
-    const uniquePrefecturesToConsider = [...new Set(prefecturesToConsider)];
-    uniquePrefecturesToConsider.sort().forEach(pref => {
-        if (allPrices[pref] && !addedRegions.has(pref)) {
-            addPriceRow(pref, allPrices[pref]);
+    prefecturesToDisplay.sort().forEach(pref => {
+        if (allPrices[pref] && !addedRegions.has(pref)) { 
+            addPriceRow(pref, allPrices[pref]); 
             addedRegions.add(pref);
         }
     });
 
-
     // 表示順序の調整: 全国 -> 選択エリア -> 選択都道府県 -> その他の都道府県
     const order = ["全国"];
     if (selectedArea && selectedArea !== "全国") {
-      order.push(selectedArea);
+        order.push(selectedArea);
     }
     if (selectedPrefecture && selectedPrefecture !== "全国") {
-      order.push(selectedPrefecture);
+        order.push(selectedPrefecture);
     }
 
     const sortedRows = Array.from(priceTableBody.children).sort((a, b) => {
@@ -359,10 +381,10 @@ document.addEventListener("DOMContentLoaded", () => {
       
       // prices_by_region.json のキー名と表示名を考慮した順序調整
       // 例: "九州" (表示名) は "九州・沖縄" (areasキー) または "九州" (pricesキー) に対応
-      if (textA === "九州" && order.includes("九州・沖縄")) indexA = order.indexOf("九州・沖縄");
-      if (textB === "九州" && order.includes("九州・沖縄")) indexB = order.indexOf("九州・沖縄");
-      if (textA === "近畿" && order.includes("近畿北陸")) indexA = order.indexOf("近畿北陸");
-      if (textB === "近畿" && order.includes("近畿北陸")) indexB = order.indexOf("近畿北陸");
+      if (textA === "九州" && selectedArea === "九州・沖縄") indexA = order.indexOf("九州・沖縄");
+      if (textB === "九州" && selectedArea === "九州・沖縄") indexB = order.indexOf("九州・沖縄");
+      if (textA === "近畿" && selectedArea === "近畿") indexA = order.indexOf("近畿"); // 近畿の場合
+      if (textB === "近畿" && selectedArea === "近畿") indexB = order.indexOf("近畿");
 
 
       // 優先順位リストにある項目は、その順序に従う
@@ -386,21 +408,23 @@ document.addEventListener("DOMContentLoaded", () => {
     sortedRows.forEach(row => priceTableBody.appendChild(row));
   }
 
-  // 初期表示時に結果セクションを非表示にする関数
-  function hideAllResults() {
+  // 初期表示時に結果セクションのコンテンツを非表示にする関数
+  function hideAllContent() {
     storeSummary.style.display = 'none';
-    priceInfoSection.style.display = 'none';
-    priceTableBody.closest('table').style.display = 'none'; // 価格テーブル
-    searchResultSection.style.display = 'none';
-    resultBody.closest('table').style.display = 'none'; // 検索結果テーブル
+    priceTable.style.display = 'none';
+    searchResultTable.style.display = 'none';
+    // タイトルは出しっぱなし
+    // priceInfoSection.style.display = 'block'; // h2
+    // searchResultSection.style.display = 'block'; // h2
   }
 
-  // 検索後に結果セクションを表示する関数
-  function showAllResults() {
+  // 検索後に結果セクションのコンテンツを表示する関数
+  function showAllContent() {
     storeSummary.style.display = 'block';
-    priceInfoSection.style.display = 'block';
-    priceTableBody.closest('table').style.display = 'table'; // 価格テーブル
-    searchResultSection.style.display = 'block';
-    resultBody.closest('table').style.display = 'table'; // 検索結果テーブル
+    priceTable.style.display = 'table';
+    searchResultTable.style.display = 'table';
+    // タイトルは出しっぱなし
+    // priceInfoSection.style.display = 'block'; // h2
+    // searchResultSection.style.display = 'block'; // h2
   }
 });
