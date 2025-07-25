@@ -119,29 +119,39 @@ th {
   background-color: #e6f7ff;
   border-left: 5px solid #007bff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  text-align: center;
+  /* text-align: center;  これはメディアクエリ内で再定義 */
+  display: flex; /* Flexboxを有効にする */
+  flex-wrap: wrap; /* 必要に応じて要素を折り返す */
+  justify-content: center; /* 中央寄せ */
+  align-items: baseline; /* ベースラインで揃える */
 }
 
 /* 店舗数サマリーのspan要素の表示を調整 */
 #storeSummary span {
-  display: inline-block; /* インラインブロックで並びつつ幅を持つ */
+  display: inline-flex; /* インラインフレックスで並びつつ、内容の配置も制御 */
+  align-items: baseline; /* ラベルとカウントのベースラインを揃える */
   margin: 0 4px; /* 左右の余白を調整 */
-  vertical-align: middle; /* 中央揃え */
+  white-space: nowrap; /* 各スパン内での改行を防ぐ */
 }
 
 #storeSummary span.label {
   font-size: 1.1rem;
   font-weight: normal;
   color: #555;
-  white-space: nowrap; /* ラベル内での改行を防ぐ */
 }
 
 #storeSummary span.count {
   font-size: 2.8rem;
   font-weight: bolder;
   color: #d9534f;
+  margin: 0 8px 0 0; /* カウントの右側に少し余白を持たせる */
 }
+
+/* PC版では非表示 */
+.break-point-mobile {
+  display: none;
+}
+
 
 .price-table-caption {
   font-size: 0.9rem;
@@ -241,18 +251,27 @@ th {
   #storeSummary {
     padding: 10px;
     font-size: 1.2rem;
+    line-height: 1.4; /* サマリーの行間を詰める */
+    /* text-align: left; Flexboxのため、各spanの改行を制御 */
+    justify-content: flex-start; /* 左寄せ */
   }
 
+  /* スマホでのサマリー表示の改行調整 */
   #storeSummary span.label {
     font-size: 0.9em;
-    /* display: block; /* 必要に応じてラベルを強制的に改行させる */
-    /* text-align: center; */
   }
 
   #storeSummary span.count {
     font-size: 2.0rem;
-    /* display: block; /* 必要に応じてカウントを強制的に改行させる */
-    /* text-align: center; */
+  }
+  
+  /* スマホ版でのみ改行要素を表示 */
+  .break-point-mobile {
+    display: block; /* ブロック要素にして強制改行 */
+    width: 100%; /* 親の幅いっぱいに広げる */
+    height: 0; /* 高さは0に */
+    margin: 0; /* マージンも0に */
+    overflow: hidden; /* 内容を隠す */
   }
 
   /* テーブルのセルを調整 */
@@ -274,23 +293,21 @@ th {
 
   /* 価格情報テーブルの列幅を調整 */
   .price-table th, .price-table td {
-      /* min-width: のみを使い、width: auto; でコンテンツに合わせる */
       width: auto;
-      min-width: 70px; /* 小さすぎるのを防ぐ最小幅 */
-      white-space: normal; /* テキストが折り返すように */
+      min-width: 70px;
+      white-space: normal;
   }
-  /* 各列のコンテンツが均等に収まるように幅を調整 */
-  .price-table th:nth-child(1), .price-table td:nth-child(1) { min-width: 65px; } /* 掲載範囲 */
-  .price-table th:nth-child(2), .price-table td:nth-child(2) { min-width: 120px; } /* マルチ+1面 */
-  .price-table th:nth-child(3), .price-table td:nth-child(3) { min-width: 120px; } /* マルチのみ */
-  .price-table th:nth-child(4), .price-table td:nth-child(4) { min-width: 90px; } /* POS静止画 */
-  .price-table th:nth-child(5), .price-table td:nth-child(5) { min-width: 90px; } /* POS動画 */
+  .price-table th:nth-child(1), .price-table td:nth-child(1) { min-width: 65px; }
+  .price-table th:nth-child(2), .price-table td:nth-child(2) { min-width: 120px; }
+  .price-table th:nth-child(3), .price-table td:nth-child(3) { min-width: 120px; }
+  .price-table th:nth-child(4), .price-table td:nth-child(4) { min-width: 90px; }
+  .price-table th:nth-child(5), .price-table td:nth-child(5) { min-width: 90px; }
 
 
   /* 検索結果テーブルの列幅を調整 */
-  table th:nth-child(1), table td:nth-child(1) { min-width: 70px; } /* サイネージ */
-  table th:nth-child(2), table td:nth-child(2) { min-width: 100px; } /* 店舗名 */
-  table th:nth-child(3), table td:nth-child(3) { min-width: 150px; } /* 住所 */
+  table th:nth-child(1), table td:nth-child(1) { min-width: 70px; }
+  table th:nth-child(2), table td:nth-child(2) { min-width: 100px; }
+  table th:nth-child(3), table td:nth-child(3) { min-width: 150px; }
 }
 
 /* 更に小さな画面（例: iPhone SE, Galaxy Foldなど）向け調整 */
@@ -300,10 +317,10 @@ th {
     font-size: 13px; /* さらにbodyの基本フォントサイズを小さく */
   }
   h1 {
-    font-size: 1.5em; /* 相対的に調整 */
+    font-size: 1.5em;
   }
   h2 {
-    font-size: 1.2em; /* 相対的に調整 */
+    font-size: 1.2em;
   }
   select, button {
     font-size: 0.85rem;
