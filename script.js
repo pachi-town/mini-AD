@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
       allPrices = prices;
       populateAreaSelect(); // エリアドロップダウンを初期化
       populatePrefectureSelect(""); // 都道府県ドロップダウンを初期化（全表示）
-      performSearch(); // 初期表示として全ての店舗を検索
-      updatePriceTable(); // 初期価格表を表示
+      // 初期表示は「検索」ボタンクリック時と同じロジックで実行
+      performSearchAndPriceUpdate();
     })
     .catch(err => {
       console.error("データの読み込みに失敗しました:", err);
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function populateCitySelect(selectedPrefecture) {
     citySelect.innerHTML = '<option value="">市区町村</option>';
     if (selectedPrefecture && allStores[selectedPrefecture]) {
-      Object.keys(allStores[selectedPrefecture]).forEach(city => {
+      Object.keys(allStores[selectedPreffecture]).forEach(city => {
         const option = document.createElement("option");
         option.value = city;
         option.textContent = city;
@@ -102,36 +102,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- ドロップダウンの変更イベントリスナー ---
+  // --- ドロップダウンの変更イベントリスナー (選択肢の更新のみ) ---
   areaSelect.addEventListener("change", () => {
     const selectedArea = areaSelect.value;
     populatePrefectureSelect(selectedArea); // エリアに基づいて都道府県を更新
     prefectureSelect.value = ""; // 都道府県をリセット
     citySelect.value = ""; // 市区町村をリセット
-    updatePriceTable(selectedArea, ""); // 価格表をエリアに基づいて更新
-    performSearch(); // 検索を実行
+    // ここでは検索や価格表の更新は行わない
   });
 
   prefectureSelect.addEventListener("change", () => {
     const selectedPrefecture = prefectureSelect.value;
     populateCitySelect(selectedPrefecture); // 都道府県に基づいて市区町村を更新
-    updatePriceTable(areaSelect.value, selectedPrefecture); // 価格表を都道府県に基づいて更新
-    performSearch(); // 検索を実行
+    // ここでは検索や価格表の更新は行わない
   });
 
   citySelect.addEventListener("change", () => {
-    // 市区町村が変更されたら検索を実行（価格表には影響なし）
-    performSearch();
+    // ここでは検索や価格表の更新は行わない
   });
 
-  // --- 検索機能 ---
+  // --- 検索ボタンクリック時の処理 ---
   searchBtn.addEventListener("click", () => {
-    performSearch();
-    // 検索ボタンクリック時にも価格表を更新する
-    updatePriceTable(areaSelect.value, prefectureSelect.value);
+    performSearchAndPriceUpdate();
   });
 
-  function performSearch() {
+  // 検索と価格表の更新をまとめて行う関数
+  function performSearchAndPriceUpdate() {
     const selectedArea = areaSelect.value;
     const selectedPrefecture = prefectureSelect.value;
     const selectedCity = citySelect.value;
@@ -174,7 +170,11 @@ document.addEventListener("DOMContentLoaded", () => {
     totalStoresCount = filteredStores.length;
     displaySearchResults(filteredStores);
     updateStoreSummary(totalStoresCount);
+
+    // 価格表の更新
+    updatePriceTable(selectedArea, selectedPrefecture);
   }
+
 
   // 検索結果を表示する関数
   function displaySearchResults(stores) {
