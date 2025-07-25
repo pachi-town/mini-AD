@@ -1,7 +1,7 @@
 /* body全体のフォントサイズ基準をremに */
 body {
-  font-family: "Inter", "Helvetica Neue", sans-serif;
-  background: #f0f2f5;
+  font-family: "Inter", "Helvetica Neue", sans-serif; /* フォントをInterに変更 */
+  background: #f0f2f5; /* 背景色を少し明るいグレーに */
   color: #333;
   padding: 20px;
   line-height: 1.6; /* 全体の行の高さを相対的に指定 */
@@ -305,9 +305,13 @@ th {
 
 
   /* 検索結果テーブルの列幅を調整 */
-  table th:nth-child(1), table td:nth-child(1) { min-width: 70px; }
-  table th:nth-child(2), table td:nth-child(2) { min-width: 100px; }
-  table th:nth-child(3), table td:nth-child(3) { min-width: 150px; }
+  table th, table td {
+    white-space: normal; /* 折り返しを許可 */
+    word-break: break-word; /* 長い単語も折り返す */
+  }
+  table th:nth-child(1), table td:nth-child(1) { min-width: 80px; } /* サイネージ */
+  table th:nth-child(2), table td:nth-child(2) { min-width: 120px; } /* 店舗名 */
+  table th:nth-child(3), table td:nth-child(3) { min-width: 200px; } /* 住所 */
 }
 
 /* 更に小さな画面（例: iPhone SE, Galaxy Foldなど）向け調整 */
@@ -348,7 +352,7 @@ th {
   .price-table th:nth-child(5), .price-table td:nth-child(5) { min-width: 80px; }
 
   /* 検索結果テーブルの列幅をさらに調整 */
-  table th:nth-child(1), table td:nth-child(1) { min-width: 60px; }
+  table th:nth-child(1), table td:nth-child(1) { min-width: 70px; }
   table th:nth-child(2), table td:nth-child(2) { min-width: 90px; }
   table th:nth-child(3), table td:nth-child(3) { min-width: 120px; }
 }
