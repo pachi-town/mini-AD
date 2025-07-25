@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ミニストップAD サイネージ設置店舗検索</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
@@ -32,29 +33,33 @@
   <div id="storeSummary"></div>
 
   <h2>価格情報 <span class="note small-text">（価格は1週間料金となります／税別）</span></h2>
-  <table class="price-table">
-    <thead>
-      <tr class="centered-header">
-        <th>掲載範囲</th>
-        <th>マルチ＋1面の店舗に掲載</th>
-        <th>マルチディスプレイ設置店舗にのみ掲載</th>
-        <th>POSレジ静止画15秒</th>
-        <th>POSレジ動画15秒</th>
-      </tr>
-    </thead>
-    <tbody id="priceTableBody"></tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="price-table">
+      <thead>
+        <tr class="centered-header">
+          <th>掲載範囲</th>
+          <th>マルチ＋1面の店舗に掲載</th>
+          <th>マルチディスプレイ設置店舗にのみ掲載</th>
+          <th>POSレジ静止画15秒</th>
+          <th>POSレジ動画15秒</th>
+        </tr>
+      </thead>
+      <tbody id="priceTableBody"></tbody>
+    </table>
+  </div>
 
   <h2>検索結果</h2>
-  <table>
-    <thead>
-      <tr class="centered-header">
-        <th>サイネージ</th>
-        <th>店舗名</th>
-        <th>住所</th>
-      </tr>
-    </thead>
-    <tbody id="resultBody"></tbody>
-  </table>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr class="centered-header">
+          <th>サイネージ</th>
+          <th>店舗名</th>
+          <th>住所</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+  </div>
 </body>
 </html>
