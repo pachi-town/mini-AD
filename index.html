@@ -7,6 +7,14 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
+  <style>
+    .small-text {
+      font-size: 0.8em;
+    }
+    .centered-header th {
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
   <h1>ミニストップAD サイネージ設置店舗検索</h1>
@@ -19,10 +27,10 @@
 
   <div id="storeSummary"></div>
 
-  <h2>価格情報 <span class="note">（価格は1週間料金となります　税別です）</span></h2>
+  <h2>価格情報 <span class="note small-text">（価格は1週間料金となります／税別）</span></h2>
   <table class="price-table">
     <thead>
-      <tr>
+      <tr class="centered-header">
         <th>掲載範囲</th>
         <th>マルチ＋1面の店舗に掲載</th>
         <th>マルチディスプレイ設置店舗にのみ掲載</th>
@@ -36,7 +44,7 @@
   <h2>検索結果</h2>
   <table>
     <thead>
-      <tr>
+      <tr class="centered-header">
         <th>サイネージ</th>
         <th>店舗名</th>
         <th>住所</th>
