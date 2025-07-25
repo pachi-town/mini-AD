@@ -263,10 +263,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const totalStoresCount = multiDisplayCount + singleDisplayCount;
 
+    // 単位をすべて「店舗」に統一
+    // スマホ版での改行調整のため、break-pointクラスを挿入
     storeSummary.innerHTML = `
-      <span class="label">マルチディスプレイ設置店舗：</span><span class="count">${multiDisplayCount}</span><span class="label">件 / </span>
-      <span class="label">1面設置店舗：</span><span class="count">${singleDisplayCount}</span><span class="label">件 / </span>
-      <span class="label">サイネージ設置店舗合計：</span><span class="count">${totalStoresCount}</span><span class="label">店舗</span>
+      <span class="label">マルチディスプレイ設置店舗：</span><span class="count">${multiDisplayCount}</span><span class="label">店舗</span>
+      <span class="break-point-mobile"></span> <span class="label">1面設置店舗：</span><span class="count">${singleDisplayCount}</span><span class="label">店舗</span>
+      <span class="break-point-mobile"></span> <span class="label">サイネージ設置店舗合計：</span><span class="count">${totalStoresCount}</span><span class="label">店舗</span>
     `;
   }
 
