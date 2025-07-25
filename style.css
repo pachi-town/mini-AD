@@ -1,56 +1,61 @@
+/* body全体のフォントサイズ基準をremに */
 body {
-  font-family: "Inter", "Helvetica Neue", sans-serif; /* フォントをInterに変更 */
-  background: #f0f2f5; /* 背景色を少し明るいグレーに */
+  font-family: "Inter", "Helvetica Neue", sans-serif;
+  background: #f0f2f5;
   color: #333;
   padding: 20px;
-  line-height: 1.6;
+  line-height: 1.6; /* 全体の行の高さを相対的に指定 */
+  font-size: 16px; /* 基本フォントサイズ（デスクトップ基準） */
 }
 
 h1 {
-  font-size: 2em; /* タイトルを少し大きく */
-  color: #2c3e50; /* 濃いめの色 */
+  font-size: 2em; /* bodyのfont-sizeに対する相対値 */
+  color: #2c3e50;
   margin-bottom: 25px;
   text-align: center;
-  border-bottom: 3px solid #007bff; /* 下線を強調 */
+  border-bottom: 3px solid #007bff;
   padding-bottom: 10px;
+  word-break: keep-all; /* 必要に応じて、単語の途中で改行しない */
 }
 
 h2 {
-  font-size: 1.5em; /* 見出しを調整 */
+  font-size: 1.5em;
   margin-top: 40px;
   border-bottom: 2px solid #ccc;
   padding-bottom: 8px;
   color: #34495e;
+  word-break: keep-all; /* 必要に応じて */
 }
 
 .controls {
   display: flex;
-  flex-wrap: wrap; /* 小さい画面で折り返す */
-  gap: 15px; /* 要素間のスペース */
+  flex-wrap: wrap;
+  gap: 15px;
   margin-bottom: 30px;
   padding: 15px;
   background-color: #ffffff;
-  border-radius: 8px; /* 角を丸く */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   align-items: center;
-  justify-content: center; /* 中央寄せ */
+  justify-content: center;
 }
 
 select, button {
-  padding: 10px 18px; /* パディングを増やす */
-  font-size: 1.1rem; /* フォントサイズを少し大きく */
-  border: 1px solid #a0a0a0; /* 枠線を調整 */
-  border-radius: 6px; /* 角を丸く */
+  padding: 10px 18px;
+  font-size: 1rem; /* remに変更 */
+  border: 1px solid #a0a0a0;
+  border-radius: 6px;
   background-color: #ffffff;
   cursor: pointer;
-  transition: all 0.3s ease; /* ホバーエフェクト */
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* 軽い内側の影 */
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box; /* パディングを含めて幅を計算 */
 }
 
 select:focus, button:focus {
   outline: none;
   border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* フォーカス時の影 */
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 button {
@@ -62,8 +67,8 @@ button {
 
 button:hover {
   background-color: #0056b3;
-  transform: translateY(-2px); /* わずかに上に移動 */
-  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2); /* 影を強調 */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2);
 }
 
 table {
@@ -72,21 +77,24 @@ table {
   background: #ffffff;
   margin-top: 20px;
   border-radius: 8px;
-  overflow: hidden; /* 角丸を適用するために必要 */
+  overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
-  border: 1px solid #e0e0e0; /* 罫線を薄く */
-  padding: 12px 15px; /* パディングを調整 */
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
   text-align: left;
+  font-size: 0.95em; /* 相対値に変更 */
+  word-break: break-word; /* 長いテキストの自動改行 */
+  overflow-wrap: break-word; /* modern alias for word-break */
 }
 
 th {
-  background: #e9ecef; /* ヘッダーの背景色 */
+  background: #e9ecef;
   font-weight: bold;
   color: #495057;
-  text-align: center; /* ヘッダーテキストを中央寄せ */
+  text-align: center;
 }
 
 /* 価格テーブルの特定の列を中央寄せ */
@@ -108,26 +116,26 @@ th {
   color: #000;
   margin-top: 15px;
   padding: 15px;
-  background-color: #e6f7ff; /* 明るい青の背景 */
-  border-left: 5px solid #007bff; /* 左に強調線 */
+  background-color: #e6f7ff;
+  border-left: 5px solid #007bff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-  text-align: center; /* 中央寄せ */
+  text-align: center;
 }
 
 #storeSummary span.label {
   font-size: 1.1rem;
   font-weight: normal;
   color: #555;
-  vertical-align: middle; /* 中央揃え */
+  vertical-align: middle;
 }
 
 #storeSummary span.count {
-  font-size: 2.8rem; /* カウントを非常に大きく */
-  font-weight: bolder; /* さらに太く */
-  color: #d9534f; /* 赤系の強調色 */
-  margin: 0 8px; /* 左右の余白 */
-  vertical-align: middle; /* 中央揃え */
+  font-size: 2.8rem;
+  font-weight: bolder;
+  color: #d9534f;
+  margin: 0 8px;
+  vertical-align: middle;
 }
 
 .price-table-caption {
@@ -145,16 +153,16 @@ th {
 
 /* 選択された都道府県の価格行を強調 */
 .price-table tr.highlight-pref-price {
-  background-color: #fff3cd; /* 非常に目立つ背景色 */
-  border: 3px solid #ffc107; /* 太い枠線 */
-  animation: pulse 1.5s infinite alternate; /* 脈動アニメーション */
+  background-color: #fff3cd;
+  border: 3px solid #ffc107;
+  animation: pulse 1.5s infinite alternate;
 }
 
 .price-table tr.highlight-pref-price td {
-  font-size: 1.6em; /* 非常に大きなフォントサイズ */
-  font-weight: bolder; /* さらに太く */
-  color: #dc3545; /* 強調色 */
-  padding: 15px; /* パディングを増やす */
+  font-size: 1.6em;
+  font-weight: bolder;
+  color: #dc3545;
+  padding: 15px;
 }
 
 /* 脈動アニメーションの定義 */
@@ -181,95 +189,98 @@ th {
 
 /* テーブルを囲む要素のスタイル */
 .table-responsive {
-  overflow-x: auto; /* 横方向のスクロールを有効にする */
-  -webkit-overflow-scrolling: touch; /* iOSで滑らかなスクロールを実現 */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* レスポンシブデザインの調整 */
+/* --- レスポンシブデザインの調整 --- */
+
+/* box-sizingを全体に適用 */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* スマートフォン向けの調整 (768px以下) */
 @media (max-width: 768px) {
   body {
     padding: 10px; /* 全体のパディングを減らす */
+    font-size: 14px; /* bodyの基本フォントサイズを小さく */
   }
 
   h1 {
-    font-size: 1.5em; /* h1をもっと小さく */
+    font-size: 1.8em; /* bodyの14pxに対して相対的に1.8倍 */
     margin-bottom: 15px;
     padding-bottom: 5px;
   }
 
   h2 {
-    font-size: 1.2em; /* h2をもっと小さく */
+    font-size: 1.4em; /* bodyの14pxに対して相対的に1.4倍 */
     margin-top: 30px;
     padding-bottom: 5px;
   }
 
   .controls {
-    flex-direction: column; /* 縦並びにする */
-    align-items: stretch; /* 幅いっぱいに広げる */
-    gap: 10px; /* 要素間のスペースを減らす */
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px; /* 要素間のスペースをさらに減らす */
     padding: 10px;
   }
 
   select, button {
-    width: 100%; /* 全幅にする */
-    padding: 12px 10px; /* パディングを調整して指で押しやすくする */
-    font-size: 1rem; /* フォントサイズをさらに調整 */
+    width: 100%;
+    padding: 10px; /* パディングを調整して指で押しやすくする */
+    font-size: 0.9rem; /* bodyのフォントサイズに対するrem */
+    min-height: 44px; /* タップターゲットの最低サイズ推奨 */
   }
 
   #storeSummary {
     padding: 10px;
-    font-size: 1.4rem; /* サマリーのフォントサイズ調整 */
+    font-size: 1.2rem; /* remで調整 */
   }
 
   #storeSummary span.label {
-    font-size: 0.9em;
+    font-size: 0.9em; /* 親のfont-sizeに対して相対的 */
   }
 
   #storeSummary span.count {
-    font-size: 2.0rem; /* カウントのフォントサイズ調整 */
+    font-size: 2.0rem; /* remで調整 */
   }
 
   /* テーブルのセルを調整 */
   th, td {
-    padding: 8px 10px; /* テーブルのセルパディングを減らす */
-    font-size: 0.85em; /* テーブルの文字サイズを小さくする */
+    padding: 8px 5px; /* テーブルのセルパディングを減らす */
+    font-size: 0.85em; /* 親のfont-sizeに対して相対的 */
+    white-space: normal; /* セル内の改行を許可 */
+    word-break: break-word; /* 長い単語でも強制改行 */
   }
 
   .price-table tr.prefecture-row td {
-    font-size: 1em; /* 都道府県行のフォントサイズ調整 */
+    font-size: 1em; /* 親のfont-sizeに対して相対的 */
   }
 
   .price-table tr.highlight-pref-price td {
-    font-size: 1.3em; /* ハイライトされた行のフォントサイズ調整 */
-    padding: 10px;
+    font-size: 1.3em; /* 親のfont-sizeに対して相対的 */
+    padding: 10px 8px;
   }
 
-  /* 価格情報テーブルの列幅を調整（必要に応じて） */
+  /* 価格情報テーブルの列幅を調整 */
+  /* 各列にwidthを指定することで、画面幅に応じて均等に縮まり、横スクロールに頼る */
+  .price-table th, .price-table td {
+      width: 20%; /* 5列なので均等に20% */
+      min-width: 80px; /* 小さすぎるのを防ぐ最小幅 */
+      white-space: normal; /* テキストが折り返すように */
+  }
+  /* 掲載範囲は少し狭くてもOKな場合 */
   .price-table th:nth-child(1),
   .price-table td:nth-child(1) {
-    min-width: 80px; /* 掲載範囲の最小幅 */
-  }
-  .price-table th:nth-child(2),
-  .price-table td:nth-child(2) {
-    min-width: 130px; /* マルチ+1面の最小幅 */
-  }
-  .price-table th:nth-child(3),
-  .price-table td:nth-child(3) {
-    min-width: 130px; /* マルチのみの最小幅 */
-  }
-  .price-table th:nth-child(4),
-  .price-table td:nth-child(4) {
-    min-width: 100px; /* POS静止画の最小幅 */
-  }
-  .price-table th:nth-child(5),
-  .price-table td:nth-child(5) {
-    min-width: 100px; /* POS動画の最小幅 */
+      min-width: 60px;
   }
 
-  /* 検索結果テーブルの列幅を調整（必要に応じて） */
+
+  /* 検索結果テーブルの列幅を調整 */
   table th:nth-child(1),
   table td:nth-child(1) {
-    min-width: 80px; /* サイネージの最小幅 */
+    min-width: 70px; /* サイネージの最小幅 */
   }
   table th:nth-child(2),
   table td:nth-child(2) {
@@ -281,28 +292,56 @@ th {
   }
 }
 
-/* 更に小さな画面（例: iPhone SEなど）向け調整 */
-@media (max-width: 480px) {
+/* 更に小さな画面（例: iPhone SE, Galaxy Foldなど）向け調整 */
+@media (max-width: 420px) {
+  body {
+    padding: 8px;
+    font-size: 13px; /* さらにbodyの基本フォントサイズを小さく */
+  }
   h1 {
-    font-size: 1.3em;
+    font-size: 1.5em; /* 相対的に調整 */
   }
   h2 {
-    font-size: 1.1em;
+    font-size: 1.2em; /* 相対的に調整 */
   }
   select, button {
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* remで調整 */
+    padding: 8px;
   }
   #storeSummary {
-    font-size: 1.2rem;
+    font-size: 1.0rem; /* remで調整 */
   }
   #storeSummary span.count {
-    font-size: 1.8rem;
+    font-size: 1.6rem; /* remで調整 */
   }
   th, td {
-    padding: 6px 8px; /* さらにパディングを減らす */
-    font-size: 0.8em; /* さらに文字サイズを小さく */
+    padding: 6px 4px; /* さらにパディングを減らす */
+    font-size: 0.8em; /* 相対的に調整 */
   }
   .price-table tr.highlight-pref-price td {
-    font-size: 1.1em; /* ハイライト行もさらに小さく */
+    font-size: 1.1em; /* 相対的に調整 */
+  }
+
+  /* 価格情報テーブルの列幅をさらに調整 */
+  .price-table th, .price-table td {
+      min-width: 70px; /* 最小幅をさらに減らす */
+  }
+  .price-table th:nth-child(1),
+  .price-table td:nth-child(1) {
+      min-width: 55px;
+  }
+
+  /* 検索結果テーブルの列幅をさらに調整 */
+  table th:nth-child(1),
+  table td:nth-child(1) {
+    min-width: 60px;
+  }
+  table th:nth-child(2),
+  table td:nth-child(2) {
+    min-width: 90px;
+  }
+  table th:nth-child(3),
+  table td:nth-child(3) {
+    min-width: 120px;
   }
 }
