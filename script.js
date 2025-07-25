@@ -7,11 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((prices) => {
       priceTableBody.innerHTML = "";
 
-      if (!Array.isArray(prices)) {
-        console.error("Invalid data format: prices is not an array.");
-        return;
-      }
-
       const prefectures = [
         "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
         "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
@@ -23,18 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
         "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
       ];
 
-      prices.forEach((region) => {
-        const isPrefecture = prefectures.includes(region.name);
+      Object.entries(prices).forEach(([regionName, priceData]) => {
+        const isPrefecture = prefectures.includes(regionName);
         const row = document.createElement("tr");
 
         if (isPrefecture) row.classList.add("prefecture-row");
 
         row.innerHTML = `
-          <td>${region.name}</td>
-          <td>${region.basic === "対象外" ? "対象外" : region.basic + "円"}</td>
-          <td>${region.multi === "対象外" ? "対象外" : region.multi + "円"}</td>
-          <td>${region.posStill === "対象外" ? "対象外" : region.posStill + "円"}</td>
-          <td>${region.posMovie === "対象外" ? "対象外" : region.posMovie + "円"}</td>
+          <td>${regionName}</td>
+          <td>${priceData["ベーシック"] === "対象外" ? "対象外" : priceData["ベーシック"] + "円"}</td>
+          <td>${priceData["マルチのみ"] === "対象外" ? "対象外" : priceData["マルチのみ"] + "円"}</td>
+          <td>${priceData["POS静止画"] === "対象外" ? "対象外" : priceData["POS静止画"] + "円"}</td>
+          <td>${priceData["POS動画"] === "対象外" ? "対象外" : priceData["POS動画"] + "円"}</td>
         `;
         priceTableBody.appendChild(row);
       });
