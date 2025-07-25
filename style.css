@@ -187,30 +187,122 @@ th {
 
 /* レスポンシブデザインの調整 */
 @media (max-width: 768px) {
+  body {
+    padding: 10px; /* 全体のパディングを減らす */
+  }
+
+  h1 {
+    font-size: 1.5em; /* h1をもっと小さく */
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+  }
+
+  h2 {
+    font-size: 1.2em; /* h2をもっと小さく */
+    margin-top: 30px;
+    padding-bottom: 5px;
+  }
+
   .controls {
     flex-direction: column; /* 縦並びにする */
     align-items: stretch; /* 幅いっぱいに広げる */
+    gap: 10px; /* 要素間のスペースを減らす */
+    padding: 10px;
   }
 
   select, button {
     width: 100%; /* 全幅にする */
-    margin-right: 0; /* 右マージンをなくす */
+    padding: 12px 10px; /* パディングを調整して指で押しやすくする */
+    font-size: 1rem; /* フォントサイズをさらに調整 */
   }
 
-  h1 {
-    font-size: 1.8em;
+  #storeSummary {
+    padding: 10px;
+    font-size: 1.4rem; /* サマリーのフォントサイズ調整 */
   }
 
-  h2 {
-    font-size: 1.3em;
+  #storeSummary span.label {
+    font-size: 0.9em;
   }
 
   #storeSummary span.count {
-    font-size: 2.2rem;
+    font-size: 2.0rem; /* カウントのフォントサイズ調整 */
+  }
+
+  /* テーブルのセルを調整 */
+  th, td {
+    padding: 8px 10px; /* テーブルのセルパディングを減らす */
+    font-size: 0.85em; /* テーブルの文字サイズを小さくする */
+  }
+
+  .price-table tr.prefecture-row td {
+    font-size: 1em; /* 都道府県行のフォントサイズ調整 */
   }
 
   .price-table tr.highlight-pref-price td {
-    font-size: 1.2em;
+    font-size: 1.3em; /* ハイライトされた行のフォントサイズ調整 */
     padding: 10px;
+  }
+
+  /* 価格情報テーブルの列幅を調整（必要に応じて） */
+  .price-table th:nth-child(1),
+  .price-table td:nth-child(1) {
+    min-width: 80px; /* 掲載範囲の最小幅 */
+  }
+  .price-table th:nth-child(2),
+  .price-table td:nth-child(2) {
+    min-width: 130px; /* マルチ+1面の最小幅 */
+  }
+  .price-table th:nth-child(3),
+  .price-table td:nth-child(3) {
+    min-width: 130px; /* マルチのみの最小幅 */
+  }
+  .price-table th:nth-child(4),
+  .price-table td:nth-child(4) {
+    min-width: 100px; /* POS静止画の最小幅 */
+  }
+  .price-table th:nth-child(5),
+  .price-table td:nth-child(5) {
+    min-width: 100px; /* POS動画の最小幅 */
+  }
+
+  /* 検索結果テーブルの列幅を調整（必要に応じて） */
+  table th:nth-child(1),
+  table td:nth-child(1) {
+    min-width: 80px; /* サイネージの最小幅 */
+  }
+  table th:nth-child(2),
+  table td:nth-child(2) {
+    min-width: 100px; /* 店舗名の最小幅 */
+  }
+  table th:nth-child(3),
+  table td:nth-child(3) {
+    min-width: 150px; /* 住所の最小幅 */
+  }
+}
+
+/* 更に小さな画面（例: iPhone SEなど）向け調整 */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.3em;
+  }
+  h2 {
+    font-size: 1.1em;
+  }
+  select, button {
+    font-size: 0.95rem;
+  }
+  #storeSummary {
+    font-size: 1.2rem;
+  }
+  #storeSummary span.count {
+    font-size: 1.8rem;
+  }
+  th, td {
+    padding: 6px 8px; /* さらにパディングを減らす */
+    font-size: 0.8em; /* さらに文字サイズを小さく */
+  }
+  .price-table tr.highlight-pref-price td {
+    font-size: 1.1em; /* ハイライト行もさらに小さく */
   }
 }
