@@ -1,102 +1,210 @@
-
 body {
-  font-family: "Helvetica Neue", sans-serif;
-  background: #ffffff;
+  font-family: "Inter", "Helvetica Neue", sans-serif; /* フォントをInterに変更 */
+  background: #f0f2f5; /* 背景色を少し明るいグレーに */
   color: #333;
   padding: 20px;
+  line-height: 1.6;
 }
+
 h1 {
-  font-size: 1.6em;
-  margin-bottom: 20px;
+  font-size: 2em; /* タイトルを少し大きく */
+  color: #2c3e50; /* 濃いめの色 */
+  margin-bottom: 25px;
+  text-align: center;
+  border-bottom: 3px solid #007bff; /* 下線を強調 */
+  padding-bottom: 10px;
 }
+
 h2 {
-  font-size: 1.3em;
-  margin-top: 30px;
+  font-size: 1.5em; /* 見出しを調整 */
+  margin-top: 40px;
   border-bottom: 2px solid #ccc;
-  padding-bottom: 5px;
+  padding-bottom: 8px;
+  color: #34495e;
 }
-.search-panel, .summary-panel, .price-panel, .result-panel {
+
+.controls {
+  display: flex;
+  flex-wrap: wrap; /* 小さい画面で折り返す */
+  gap: 15px; /* 要素間のスペース */
   margin-bottom: 30px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 8px; /* 角を丸く */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
+  align-items: center;
+  justify-content: center; /* 中央寄せ */
 }
-label {
-  margin-right: 10px;
-}
+
 select, button {
-  margin-right: 15px;
-  padding: 5px 10px;
-  font-size: 1rem;
+  padding: 10px 18px; /* パディングを増やす */
+  font-size: 1.1rem; /* フォントサイズを少し大きく */
+  border: 1px solid #a0a0a0; /* 枠線を調整 */
+  border-radius: 6px; /* 角を丸く */
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease; /* ホバーエフェクト */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* 軽い内側の影 */
 }
+
+select:focus, button:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* フォーカス時の影 */
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px); /* わずかに上に移動 */
+  box-shadow: 0 6px 12px rgba(0, 123, 255, 0.2); /* 影を強調 */
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: #ffffff;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden; /* 角丸を適用するために必要 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+  border: 1px solid #e0e0e0; /* 罫線を薄く */
+  padding: 12px 15px; /* パディングを調整 */
   text-align: left;
 }
+
 th {
-  background: #eee;
+  background: #e9ecef; /* ヘッダーの背景色 */
+  font-weight: bold;
+  color: #495057;
+  text-align: center; /* ヘッダーテキストを中央寄せ */
 }
+
+/* 価格テーブルの特定の列を中央寄せ */
+.price-table td:nth-child(2),
+.price-table td:nth-child(3),
+.price-table td:nth-child(4),
+.price-table td:nth-child(5) {
+  text-align: center;
+}
+
+/* 検索結果テーブルのヘッダーを中央寄せ */
+.centered-header th {
+  text-align: center;
+}
+
 #storeSummary {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: #000;
-  margin-top: 10px;
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #e6f7ff; /* 明るい青の背景 */
+  border-left: 5px solid #007bff; /* 左に強調線 */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  text-align: center; /* 中央寄せ */
 }
+
+#storeSummary span.label {
+  font-size: 1.1rem;
+  font-weight: normal;
+  color: #555;
+  vertical-align: middle; /* 中央揃え */
+}
+
+#storeSummary span.count {
+  font-size: 2.8rem; /* カウントを非常に大きく */
+  font-weight: bolder; /* さらに太く */
+  color: #d9534f; /* 赤系の強調色 */
+  margin: 0 8px; /* 左右の余白 */
+  vertical-align: middle; /* 中央揃え */
+}
+
 .price-table-caption {
   font-size: 0.9rem;
   color: #555;
   margin-bottom: 8px;
 }
-.price-panel table td:first-child {
+
+/* 都道府県行の基本スタイル */
+.price-table tr.prefecture-row td {
+  font-size: 1.1em;
   font-weight: bold;
-}
-.price-panel table tr.prefecture-row td {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #000;
+  color: #333;
 }
 
-.price-note {
-  font-size: 0.9rem;
+/* 選択された都道府県の価格行を強調 */
+.price-table tr.highlight-pref-price {
+  background-color: #fff3cd; /* 非常に目立つ背景色 */
+  border: 3px solid #ffc107; /* 太い枠線 */
+  animation: pulse 1.5s infinite alternate; /* 脈動アニメーション */
+}
+
+.price-table tr.highlight-pref-price td {
+  font-size: 1.6em; /* 非常に大きなフォントサイズ */
+  font-weight: bolder; /* さらに太く */
+  color: #dc3545; /* 強調色 */
+  padding: 15px; /* パディングを増やす */
+}
+
+/* 脈動アニメーションの定義 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+}
+
+.small-text {
+  font-size: 0.8em;
   color: #666;
-  font-weight: normal;
 }
 
-th.center {
-  text-align: center;
-}
-
-.price-panel table td:nth-child(2),
-.price-panel table td:nth-child(3),
-.price-panel table td:nth-child(4),
-.price-panel table td:nth-child(5) {
-  text-align: center;
-}
-
-.price-panel table th:nth-child(2),
-.price-panel table th:nth-child(3),
-.price-panel table th:nth-child(4),
-.price-panel table th:nth-child(5) {
-  text-align: center !important;
-}
-
-#storeSummary {
-  font-size: 1.5rem;
+.error-message {
+  color: #dc3545;
   font-weight: bold;
-  color: #000;
-}
-#storeSummary span.label {
-  font-size: 1rem;
-  font-weight: normal;
-}
-#storeSummary span.count {
-  font-size: 2rem;
-  font-weight: bold;
+  text-align: center;
+  margin-top: 20px;
 }
 
-#storeSummary .count + .label {
-  padding-left: 0.4em;
+/* レスポンシブデザインの調整 */
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column; /* 縦並びにする */
+    align-items: stretch; /* 幅いっぱいに広げる */
+  }
+
+  select, button {
+    width: 100%; /* 全幅にする */
+    margin-right: 0; /* 右マージンをなくす */
+  }
+
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.3em;
+  }
+
+  #storeSummary span.count {
+    font-size: 2.2rem;
+  }
+
+  .price-table tr.highlight-pref-price td {
+    font-size: 1.2em;
+    padding: 10px;
+  }
 }
