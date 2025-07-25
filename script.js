@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "近畿": "近畿北陸"
   };
 
-  // 全ての都道府県のリストをフラットに作成（重複なし）
   // stores.jsonとprices_by_region.jsonに存在する都道府県のみを抽出
   let availablePrefectures = new Set();
 
@@ -324,44 +323,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const addedRegions = new Set(); // 重複行を避けるためのSet
 
-    // 1. 全国価格を常に表示
-    if (allPrices["全国"]) { 
-      addPriceRow("全国", allPrices["全国"]); 
-      addedRegions.add("全国");
-    }
-
-    // 2. 選択されたエリアの価格を表示（全国と重複しない場合）
-    let areaPriceKey = selectedArea;
-    if (selectedArea === "九州・沖縄") {
-        areaPriceKey = "九州";
-    } else if (selectedArea === "近畿") {
-        areaPriceKey = "近畿北陸";
-    }
-    
-    // エリアが存在し、かつprices_by_region.jsonにそのキーが存在する場合
-    if (selectedArea && allPrices[areaPriceKey] && !addedRegions.has(areaPriceKey)) {
-        addPriceRow(selectedArea, allPrices[areaPriceKey]); // 表示名はselectedArea、データはareaPriceKeyで取得
-        addedRegions.add(areaPriceKey);
-    }
-
-    // 3. 選択された都道府県の価格を表示し、強調
-    if (selectedPrefecture && allPrices[selectedPrefecture] && !addedRegions.has(selectedPrefecture)) { 
-      addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true); 
-      addedRegions.add(selectedPrefecture);
-    }
-    
-    // 4. その他の関連する都道府県の価格を表示
-    // 表示すべき都道府県のリストを決定 (選択エリアがあればその中の都道府県、なければ全ての利用可能な都道府県)
-    const prefecturesToDisplay = selectedArea ? 
-                                 (areas[selectedArea] ? areas[selectedArea].filter(p => availablePrefectures.has(p)) : []) :
-                                 Array.from(availablePrefectures);
-    
-    prefecturesToDisplay.sort().forEach(pref => {
-        if (allPrices[pref] && !addedRegions.has(pref)) { 
-            addPriceRow(pref, allPrices[pref]); 
-            addedRegions.add(pref);
+    // 選択肢が何もない場合のロジックを優先
+    if (!selectedArea && !selectedPrefecture && !citySelect.value) {
+        // 何も選択肢ない場合、全国の価格情報のみ表示
+        if (allPrices["全国"]) {
+            addPriceRow("全国", allPrices["全国"]);
+            addedRegions.add("全国");
         }
-    });
+    } else {
+        // 1. 全国価格を常に表示 (ただし、何も選択肢がない場合の条件は上記で処理済み)
+        if (allPrices["全国"]) {
+          addPriceRow("全国", allPrices["全国"]);
+          addedRegions.add("全国");
+        }
+
+        // 2. 選択されたエリアの価格を表示（全国と重複しない場合）
+        let areaPriceKey = selectedArea;
+        if (selectedArea === "九州・沖縄") {
+            areaPriceKey = "九州";
+        } else if (selectedArea === "近畿") {
+            areaPriceKey = "近畿北陸";
+        }
+        
+        // エリアが存在し、かつprices_by_region.jsonにそのキーが存在する場合
+        if (selectedArea && allPrices[areaPriceKey] && !addedRegions.has(areaPriceKey)) {
+            addPriceRow(selectedArea, allPrices[areaPriceKey]); // 表示名はselectedArea、データはareaPriceKeyで取得
+            addedRegions.add(areaPriceKey);
+        }
+
+        // 3. 選択された都道府県の価格を表示し、強調
+        if (selectedPrefecture && allPrices[selectedPrefecture] && !addedRegions.has(selectedPrefecture)) { 
+          addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true); 
+          addedRegions.add(selectedPrefecture);
+        }
+        
+        // 4. その他の関連する都道府県の価格を表示
+        // 表示すべき都道府県のリストを決定 (選択エリアがあればその中の都道府県、なければ全ての利用可能な都道府県)
+        const prefecturesToDisplay = selectedArea ? 
+                                     (areas[selectedArea] ? areas[selectedArea].filter(p => availablePrefectures.has(p)) : []) :
+                                     Array.from(availablePrefectures);
+        
+        prefecturesToDisplay.sort().forEach(pref => {
+            if (allPrices[pref] && !addedRegions.has(pref)) { 
+                addPriceRow(pref, allPrices[pref]); 
+                addedRegions.add(pref);
+            }
+        });
+    }
 
     // 表示順序の調整: 全国 -> 選択エリア -> 選択都道府県 -> その他の都道府県
     const order = ["全国"];
@@ -413,9 +421,6 @@ document.addEventListener("DOMContentLoaded", () => {
     storeSummary.style.display = 'none';
     priceTable.style.display = 'none';
     searchResultTable.style.display = 'none';
-    // タイトルは出しっぱなし
-    // priceInfoSection.style.display = 'block'; // h2
-    // searchResultSection.style.display = 'block'; // h2
   }
 
   // 検索後に結果セクションのコンテンツを表示する関数
@@ -423,8 +428,5 @@ document.addEventListener("DOMContentLoaded", () => {
     storeSummary.style.display = 'block';
     priceTable.style.display = 'table';
     searchResultTable.style.display = 'table';
-    // タイトルは出しっぱなし
-    // priceInfoSection.style.display = 'block'; // h2
-    // searchResultSection.style.display = 'block'; // h2
   }
 });
