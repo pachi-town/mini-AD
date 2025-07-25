@@ -179,6 +179,12 @@ th {
   margin-top: 20px;
 }
 
+/* テーブルを囲む要素のスタイル */
+.table-responsive {
+  overflow-x: auto; /* 横方向のスクロールを有効にする */
+  -webkit-overflow-scrolling: touch; /* iOSで滑らかなスクロールを実現 */
+}
+
 /* レスポンシブデザインの調整 */
 @media (max-width: 768px) {
   .controls {
