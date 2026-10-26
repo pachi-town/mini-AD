@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ミニストップAD サイネージ設置店舗検索</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <link rel="icon" type="image/x-icon" href="favicon_new.ico">
+</head>
+<body>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>最新のデータを読み込んでいます...</p>
+  </div>
+
+  <div class="header-container">
+    <h1>ミニストップAD サイネージ設置店舗検索</h1>
+  </div>
+  
+  <!-- ★追加：ヘッダーバナー枠 -->
+  <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
+    <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
+      <img id="headerBannerImage" src="" alt="ヘッダーバナー">
+    </a>
+  </div>
+
+  <div class="main-container">
+    <div id="descriptionZone" class="description-zone">
+      <div class="desc-card multi">
+        <h3>マルチディスプレイ</h3>
+        <p id="descMultiText">※データを読み込んでいます...</p>
+      </div>
+      <div class="desc-card single">
+        <h3>1面ディスプレイ</h3>
+        <p id="descSingleText">※データを読み込んでいます...</p>
+      </div>
+      <div class="desc-card pos">
+        <h3>POSレジ</h3>
+        <p id="descPosText">※データを読み込んでいます...</p>
+      </div>
+    </div>
+
+    <div class="controls card">
+      <div class="filter-section">
+        <div class="select-group">
+          <select id="areaSelect"><option value="">エリア選択</option></select>
+          <select id="prefectureSelect"><option value="">都道府県</option></select>
+        </div>
+        <div class="city-select-group">
+          <span class="small-text">市区町村（複数選択可）</span>
+          <div id="cityCheckboxes" class="checkbox-list">
+            <div class="placeholder">都道府県を選択してください</div>
+          </div>
+        </div>
+      </div>
+      <div class="action-section">
+        <button id="btnSearch" class="btn btn-secondary">店舗を検索</button>
+        <button id="btnEstimate" class="btn btn-primary">見積もりを算出</button>
+      </div>
+    </div>
+
+    <div id="storeSummary" class="summary-container" style="display: none;"></div>
+
+    <div id="priceSection" class="card" style="display: none;">
+      <h2>価格情報 <span class="note small-text">（価格は1週間料金となります／税別）</span></h2>
+      <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
+      <div class="table-responsive" style="margin-bottom: 20px;">
+        <table class="price-table">
+          <thead>
+            <tr class="centered-header">
+              <th>掲載範囲</th>
+              <th>マルチ＋1面の店舗に掲載</th>
+              <th>マルチディスプレイ設置店舗にのみ掲載</th>
+              <th>POSレジ静止画15秒</th>
+              <th>POSレジ動画15秒</th>
+            </tr>
+          </thead>
+          <tbody id="priceTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="calcResultBox" class="calc-result" style="display: none;">
+        <div class="price-label">
+          選択した市区町村で配信する場合<br>
+          <span style="font-size: 0.9em; font-weight: normal;">（マルチディスプレイ <span id="calcMultiCount" style="font-size: 1.4em; font-weight: bold; color: #dc2626; margin: 0 2px;">0</span> 店舗）</span>
+        </div>
+        <div class="price-value" id="priceValueDisplay"></div>
+        <div class="calc-note">
+          ※市区町村で絞り込み配信をした場合、1面店舗は除外されます。<br>
+          ※詳細は見積もりを依頼してください。
+        </div>
+      </div>
+
+      <div class="important-warning">
+        ※競合のパチンコ店敷地内にある店舗にはミニストップ側の判断で配信を行わない場合があります
+      </div>
+    </div>
+
+    <!-- 広告バナー枠（ローテーション） -->
+    <div id="adBannerContainer" class="ad-banner-container" style="display: none;">
+      <a id="adBannerLink" href="#" target="_blank" rel="noopener noreferrer">
+        <img id="adBannerImage" src="" alt="キャンペーン広告">
+      </a>
+    </div>
+
+    <div id="tabContainer" class="tab-wrapper" style="display: none;">
+      <div class="tabs">
+        <button id="tabCity" class="tab active">指定市区町村のみ</button>
+        <button id="tabPref" class="tab">都道府県全体</button>
+      </div>
+    </div>
+
+    <div id="resultSection" style="display: none;">
+      <div class="result-group target-group card">
+        <h3 class="group-title target-title">マルチディスプレイ設置店舗</h3>
+        <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr class="centered-header">
+                <th>サイネージ</th>
+                <th>店舗名</th>
+                <th>住所</th>
+              </tr>
+            </thead>
+            <tbody id="resultBodyMulti"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="result-group excluded-group card">
+        <h3 class="group-title excluded-title">1面ディスプレイ設置店舗</h3>
+        <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr class="centered-header">
+                <th>サイネージ</th>
+                <th>店舗名</th>
+                <th>住所</th>
+              </tr>
+            </thead>
+            <tbody id="resultBodySingle"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
