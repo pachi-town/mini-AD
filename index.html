@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ミニストップAD サイネージ設置店舗検索</title>
+  
+  <!-- OpenStreetMap用のライブラリ（Leaflet） -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
@@ -18,7 +23,6 @@
     <h1>ミニストップAD サイネージ設置店舗検索</h1>
   </div>
   
-  <!-- ★追加：ヘッダーバナー枠 -->
   <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
     <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
       <img id="headerBannerImage" src="" alt="ヘッダーバナー">
@@ -97,7 +101,6 @@
       </div>
     </div>
 
-    <!-- 広告バナー枠（ローテーション） -->
     <div id="adBannerContainer" class="ad-banner-container" style="display: none;">
       <a id="adBannerLink" href="#" target="_blank" rel="noopener noreferrer">
         <img id="adBannerImage" src="" alt="キャンペーン広告">
@@ -111,39 +114,58 @@
       </div>
     </div>
 
+    <!-- 店舗情報表示ゾーン -->
     <div id="resultSection" style="display: none;">
-      <div class="result-group target-group card">
-        <h3 class="group-title target-title">マルチディスプレイ設置店舗</h3>
-        <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr class="centered-header">
-                <th>サイネージ</th>
-                <th>店舗名</th>
-                <th>住所</th>
-              </tr>
-            </thead>
-            <tbody id="resultBodyMulti"></tbody>
-          </table>
+      
+      <!-- リスト・地図の切り替えタブ -->
+      <div class="tab-wrapper" style="margin-bottom: 15px;">
+        <div class="tabs">
+          <button id="btnListView" class="tab active">リスト表示</button>
+          <button id="btnMapView" class="tab">地図表示</button>
         </div>
       </div>
-      <div class="result-group excluded-group card">
-        <h3 class="group-title excluded-title">1面ディスプレイ設置店舗</h3>
-        <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr class="centered-header">
-                <th>サイネージ</th>
-                <th>店舗名</th>
-                <th>住所</th>
-              </tr>
-            </thead>
-            <tbody id="resultBodySingle"></tbody>
-          </table>
+
+      <!-- リストコンテナ -->
+      <div id="listContainer">
+        <div class="result-group target-group card">
+          <h3 class="group-title target-title">マルチディスプレイ設置店舗</h3>
+          <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr class="centered-header">
+                  <th>サイネージ</th>
+                  <th>店舗名</th>
+                  <th>住所</th>
+                </tr>
+              </thead>
+              <tbody id="resultBodyMulti"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="result-group excluded-group card">
+          <h3 class="group-title excluded-title">1面ディスプレイ設置店舗</h3>
+          <div class="scroll-hint mobile-only">※表は横にスクロールできます</div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr class="centered-header">
+                  <th>サイネージ</th>
+                  <th>店舗名</th>
+                  <th>住所</th>
+                </tr>
+              </thead>
+              <tbody id="resultBodySingle"></tbody>
+            </table>
+          </div>
         </div>
       </div>
+      
+      <!-- マップコンテナ -->
+      <div id="mapContainer" class="card" style="display: none; padding: 10px;">
+        <div id="map" style="height: 500px; width: 100%; border-radius: 8px; z-index: 1;"></div>
+      </div>
+
     </div>
   </div>
 </body>

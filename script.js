@@ -1,17 +1,25 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ★ここに新しいGASのURLを貼り付けてください
-  const gasUrl = "https://script.google.com/macros/s/AKfycbyBajQ573blTAOO6c2zVwheYbzo58_6aD6Q4t3ra97q762sCE4MfEchfQdQVmBePaoy/exec";
+  const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
   const prefectureSelect = document.getElementById("prefectureSelect");
   const btnSearch = document.getElementById("btnSearch");
   const btnEstimate = document.getElementById("btnEstimate");
   const loadingOverlay = document.getElementById("loadingOverlay");
+  
   const tabContainer = document.getElementById("tabContainer");
   const tabCity = document.getElementById("tabCity");
   const tabPref = document.getElementById("tabPref");
+  
   const resultBodyMulti = document.getElementById("resultBodyMulti");
   const resultBodySingle = document.getElementById("resultBodySingle");
+
+  // ビュー切り替え用
+  const btnListView = document.getElementById("btnListView");
+  const btnMapView = document.getElementById("btnMapView");
+  const listContainer = document.getElementById("listContainer");
+  const mapContainer = document.getElementById("mapContainer");
 
   let allStoresStructured = {}; 
   let allPrices = {};
@@ -20,6 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
   
   let currentMode = "search"; 
   let currentTab = "city";    
+
+  // マップ連携用変数
+  let map;
+  let markersLayer;
+  let isMapInitialized = false;
+  let currentMultiStores = [];
+  let currentSingleStores = [];
 
   const areas = {
     "北海道": ["北海道"], 
@@ -45,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (data.descriptions["POS"]) document.getElementById("descPosText").innerHTML = data.descriptions["POS"];
       }
 
-      // ★追加：ヘッダーバナーの反映
       if (data.headerBanner && data.headerBanner.imageUrl) {
         document.getElementById("headerBannerImage").src = data.headerBanner.imageUrl;
         const hbLink = document.getElementById("headerBannerLink");
@@ -107,6 +121,42 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("データ読み込み失敗:", err);
       loadingOverlay.innerHTML = "<p style='color: red; font-weight: bold;'>データの読み込みに失敗しました。</p>";
     });
+
+  // マップの初期化
+  function initMap() {
+    if (isMapInitialized) return;
+    // 日本全体が入るようにズームレベル5で初期化
+    map = L.map('map').setView([35.681236, 139.767125], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    markersLayer = L.layerGroup().addTo(map);
+    isMapInitialized = true;
+  }
+
+  // 表示の切り替え（リスト/地図）
+  btnListView.addEventListener("click", () => {
+    btnListView.classList.add("active");
+    btnMapView.classList.remove("active");
+    listContainer.style.display = "block";
+    mapContainer.style.display = "none";
+  });
+
+  btnMapView.addEventListener("click", () => {
+    btnMapView.classList.add("active");
+    btnListView.classList.remove("active");
+    listContainer.style.display = "none";
+    mapContainer.style.display = "block";
+    
+    if (!isMapInitialized) {
+      initMap();
+    }
+    // divが表示された直後にサイズを再計算させる
+    setTimeout(() => {
+      map.invalidateSize();
+      updateMapMarkers();
+    }, 100);
+  });
 
   function structureStores(stores) {
     allStoresStructured = {};
@@ -238,11 +288,16 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    const multiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
-    const singleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
+    currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
+    currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
 
-    updateStoreSummary(multiStores.length, singleStores.length);
-    renderTables(multiStores, singleStores);
+    updateStoreSummary(currentMultiStores.length, currentSingleStores.length);
+    renderTables(currentMultiStores, currentSingleStores);
+    
+    // 地図が表示中の場合はマーカーも更新
+    if (mapContainer.style.display === "block") {
+      updateMapMarkers();
+    }
 
     if (currentMode === "estimate") {
       document.getElementById('priceSection').style.display = 'block';
@@ -250,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (selectedCities.length > 0 && currentTab === "city") {
         document.getElementById('calcResultBox').style.display = 'flex';
-        calculateAndShowPrice(multiStores.length);
+        calculateAndShowPrice(currentMultiStores.length);
       } else {
         document.getElementById('calcResultBox').style.display = 'none';
       }
@@ -273,6 +328,45 @@ document.addEventListener("DOMContentLoaded", () => {
     resultBodySingle.innerHTML = singleStores.length > 0 
       ? singleStores.map(s => createRow(s, "1面のみ")).join('') 
       : '<tr><td colspan="3">該当する店舗がありません。</td></tr>';
+  }
+
+  function updateMapMarkers() {
+    if (!map || !markersLayer) return;
+    markersLayer.clearLayers(); 
+
+    let bounds = L.latLngBounds();
+    let hasValidMarkers = false;
+
+    const addMarker = (store, typeLabel, colorHex) => {
+      const lat = parseFloat(store['緯度']);
+      const lng = parseFloat(store['経度']);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      const fullAddress = `${store.都道府県}${store.市区町村}${store.住所}`;
+      
+      const marker = L.circleMarker([lat, lng], {
+        radius: 7,
+        fillColor: colorHex,
+        color: "#fff",
+        weight: 1.5,
+        opacity: 1,
+        fillOpacity: 0.9
+      });
+      
+      marker.bindPopup(`<b>${store.店名}</b><br><span style="color:${colorHex};font-size:0.85em;">${typeLabel}</span><br><span style="font-size:0.85em;">${fullAddress}</span>`);
+      markersLayer.addLayer(marker);
+      bounds.extend([lat, lng]);
+      hasValidMarkers = true;
+    };
+
+    currentMultiStores.forEach(s => addMarker(s, "マルチディスプレイ", "#0ea5e9"));
+    currentSingleStores.forEach(s => addMarker(s, "1面のみ", "#64748b"));
+
+    if (hasValidMarkers) {
+      map.fitBounds(bounds, { padding: [30, 30] });
+    } else {
+      map.setView([35.681236, 139.767125], 5);
+    }
   }
 
   function calculateAndShowPrice(multiCount) {

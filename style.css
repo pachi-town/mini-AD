@@ -46,6 +46,24 @@ h3 {
 .main-container { max-width: 1100px; margin: 0 auto; }
 
 /* =========================================
+   Header Banner
+   ========================================= */
+.header-banner-container {
+  max-width: 1100px;
+  margin: 0 auto 25px auto;
+  text-align: center;
+}
+.header-banner-container img {
+  width: 100%;
+  height: auto;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: block;
+}
+
+/* =========================================
    Ad Banner
    ========================================= */
 .ad-banner-container {
@@ -177,13 +195,13 @@ select:focus {
    ========================================= */
 .description-zone { 
   display: flex; 
-  align-items: stretch; /* カード自体の高さをすべて揃える */
+  align-items: stretch;
   gap: 16px; 
   margin-bottom: 24px; 
 }
 .desc-card {
   display: flex;
-  flex-direction: column; /* 中身を縦並びにする */
+  flex-direction: column;
   background: #fff; 
   border-radius: 12px; 
   padding: 16px 20px;
@@ -198,24 +216,22 @@ select:focus {
 .desc-card p { 
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* テキストエリアを残りのスペースいっぱいに広げる */
+  flex-grow: 1;
   margin: 0; 
   font-size: 0.9rem; 
   color: #6b7280; 
 }
-/* スプレッドシートから読み込んだ画像に対する強制スタイル */
 .desc-card p img {
-  margin-top: auto !important; /* 画像をカードの最下部に押し付ける */
+  margin-top: auto !important;
   width: 100% !important;
-  height: 180px !important; /* ★すべての画像ファイルの高さを強制的に統一 */
-  object-fit: cover !important; /* 縦横比を維持したまま、はみ出た部分を綺麗にトリミング */
+  height: 180px !important;
+  object-fit: cover !important;
   border-radius: 8px !important;
 }
 .desc-card.multi { flex: 2; border-left-color: #0ea5e9; }
 .desc-card.single { flex: 1; border-left-color: #64748b; }
 .desc-card.pos { flex: 1; border-left-color: #8b5cf6; }
 
-/* スマホ用の追記（モバイル時のレイアウト崩れ防止） */
 @media (max-width: 768px) {
   .description-zone { flex-direction: column; }
   .desc-card p img { height: auto !important; max-height: 200px !important; }
@@ -326,19 +342,18 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
 }
 
 /* =========================================
-   Header Banner
+   Map Styles (Leaflet Overrides)
    ========================================= */
-.header-banner-container {
-  max-width: 1100px;
-  margin: 0 auto 25px auto;
-  text-align: center;
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.header-banner-container img {
-  width: 100%;
-  height: auto;
-  max-height: 250px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  display: block;
+.leaflet-popup-content {
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 14px;
+}
+.leaflet-container {
+  font-family: inherit;
 }
