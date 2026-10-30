@@ -134,12 +134,21 @@ body[data-plan="multi"] .summary-widget.excluded {
    ========================================= */
 select { padding: 10px 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f9fafb; cursor: pointer; transition: all 0.2s ease; color: #374151; width: 100%; }
 select:focus { outline: none; border-color: #3b82f6; background-color: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-.btn { font-weight: 600; text-align: center; border: none; color: #fff; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
-.btn-primary { background: #3b82f6; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); }
-.btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
-.btn-secondary { background: #6b7280; box-shadow: 0 4px 6px rgba(107, 114, 128, 0.2); }
-.btn-secondary:hover { background: #4b5563; transform: translateY(-1px); }
-/* ★改修：市区町村の選択エリアを大幅に拡張して見やすく */
+
+/* ★改修：アクションボタンのトグルデザイン */
+.btn { font-weight: 600; text-align: center; border: 2px solid transparent; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-size: 1rem; }
+
+/* 見積もりモード用（非選択時は白背景＋枠線） */
+.btn-primary { background: #fff; color: #3b82f6; border-color: #93c5fd; }
+.btn-primary:hover { background: #eff6ff; }
+.btn-primary.active-mode { background: #3b82f6; color: #fff; border-color: #3b82f6; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+
+/* 検索モード用（非選択時は白背景＋枠線） */
+.btn-secondary { background: #fff; color: #4b5563; border-color: #d1d5db; }
+.btn-secondary:hover { background: #f3f4f6; }
+.btn-secondary.active-mode { background: #4b5563; color: #fff; border-color: #4b5563; box-shadow: 0 4px 10px rgba(75, 85, 99, 0.3); }
+
+/* ★改修：市区町村のチェックボックスリストを拡張 */
 .checkbox-list { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; width: 100%; }
 .checkbox-list label { cursor: pointer; display: flex; align-items: center; font-size: 0.95rem; color: #4b5563; }
 .checkbox-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); accent-color: #3b82f6; }
@@ -163,6 +172,8 @@ select:focus { outline: none; border-color: #3b82f6; background-color: #fff; box
   padding: 16px 20px; 
   box-shadow: 0 2px 4px rgba(0,0,0,0.03); 
   border-left: 4px solid transparent; 
+  flex: 1;
+  max-width: 350px; 
 }
 .desc-card h3 { border-bottom: none; padding-bottom: 0; margin-bottom: 8px; }
 .desc-card p { display: flex; flex-direction: column; flex-grow: 1; margin: 0; font-size: 0.9rem; color: #6b7280; }
@@ -171,7 +182,11 @@ select:focus { outline: none; border-color: #3b82f6; background-color: #fff; box
 .desc-card.single { flex: 1; border-left-color: #64748b; }
 .desc-card.pos { flex: 1; border-left-color: #8b5cf6; }
 
-@media (max-width: 768px) { .description-zone { flex-direction: column; align-items: stretch; } .desc-card { width: 100%; flex: auto; } .desc-card p img { height: auto !important; max-height: 200px !important; } }
+@media (max-width: 768px) { 
+  .description-zone { flex-direction: column; align-items: center; } 
+  .desc-card { max-width: 100%; width: 100%; } 
+  .desc-card p img { height: auto !important; max-height: 200px !important; } 
+}
 
 /* =========================================
    Summary Dashboard
@@ -224,12 +239,22 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
 .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 12px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
+/* ★改修：SP版のレイアウト調整（チェックボックスの拡張とボタンの美化） */
 @media (max-width: 768px) {
   body { padding: 12px; font-size: 14px; }
   .controls, .filter-section { flex-direction: column; gap: 16px; }
   .select-group, .city-select-group { width: 100%; min-width: 100%; }
+  
+  /* スマホ版ではチェックボックスの表示領域を十分に確保（最大約350px） */
+  .checkbox-list { max-height: 350px; }
+  
   .action-section { width: 100%; flex-direction: row; gap: 10px; }
-  .action-section button { flex: 1; padding: 14px 10px; font-size: 0.95rem; }
+  /* スマホ版でのボタンテキストの折り返し防止と余白調整 */
+  .action-section button { 
+    flex: 1; padding: 12px 4px; font-size: 0.9rem; line-height: 1.4; 
+    display: flex; align-items: center; justify-content: center; word-break: keep-all; 
+  }
+  
   .summary-container { grid-template-columns: 1fr; gap: 12px; }
   .summary-widget { padding: 16px; }
   .tabs { width: 100%; display: flex; }

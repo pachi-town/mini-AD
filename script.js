@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ★新しいGASのURL
   const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
@@ -100,6 +99,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ★追加：ボタンのアクティブ状態を切り替える関数
+  function updateModeButtons() {
+    if (currentMode === "search") {
+      btnSearch.classList.add("active-mode");
+      btnEstimate.classList.remove("active-mode");
+    } else {
+      btnEstimate.classList.add("active-mode");
+      btnSearch.classList.remove("active-mode");
+    }
+  }
+
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -177,7 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMap() {
     if (isMapInitialized) return;
     map = L.map('map').setView([35.681236, 139.767125], 5);
-    // ★ 修正：国土地理院地図からOpenStreetMapに戻しました
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
@@ -259,8 +268,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   areaSelect.addEventListener("change", () => { populatePrefectureSelect(areaSelect.value); updateView(); });
   prefectureSelect.addEventListener("change", () => { populateCitySelect(prefectureSelect.value); updateView(); });
-  btnSearch.addEventListener("click", () => { currentMode = "search"; updateView(); });
-  btnEstimate.addEventListener("click", () => { currentMode = "estimate"; updateView(); });
+  
+  // ★改修：ボタンクリック時にアクティブ状態のUIも更新
+  btnSearch.addEventListener("click", () => { currentMode = "search"; updateModeButtons(); updateView(); });
+  btnEstimate.addEventListener("click", () => { currentMode = "estimate"; updateModeButtons(); updateView(); });
+  
   tabCity.addEventListener("click", () => { currentTab = "city"; tabCity.classList.add("active"); tabPref.classList.remove("active"); updateView(); });
   tabPref.addEventListener("click", () => { currentTab = "pref"; tabPref.classList.add("active"); tabCity.classList.remove("active"); updateView(); });
 
