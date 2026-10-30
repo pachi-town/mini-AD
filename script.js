@@ -177,8 +177,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMap() {
     if (isMapInitialized) return;
     map = L.map('map').setView([35.681236, 139.767125], 5);
-    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
-      attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
+    // ★ 修正：国土地理院地図からOpenStreetMapに戻しました
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
     isMapInitialized = true;
