@@ -33,7 +33,7 @@
     
     <!-- 配信スケジュールタイムライン -->
     <div class="schedule-panel card">
-      <h3>配信開始までの最短スケジュール <span class="small-text">（起算日：<span id="todayDate"></span>）</span></h3>
+      <h3><span style="color: #dc2626;">本日時点での配信開始までの最短スケジュール</span> <span class="small-text" style="color: #333;">（起算日：<span id="todayDate"></span>）</span></h3>
       <div class="timeline">
         <div class="step">
           <div class="step-date" id="scheduleInquiry"></div>
@@ -70,7 +70,7 @@
       <button class="plan-btn" data-plan="multi">
         <span class="plan-name">マルチ限定プラン</span>
         <span class="plan-sub">マルチディスプレイのみ</span>
-        <span class="plan-note" style="display:block; font-size:0.75em; color:#dc2626; margin-top:6px; font-weight:bold;">※市区町村での絞り込みはこちら</span>
+        <span class="plan-note" style="display:block; font-size:0.75em; color:#dc2626; margin-top:6px; font-weight:bold;">※市区町村での絞り込みは本プラン限定です</span>
       </button>
       <button class="plan-btn" data-plan="pos">
         <span class="plan-name">POSレジプラン</span>
@@ -108,8 +108,8 @@
         </div>
       </div>
       <div class="action-section">
-        <button id="btnSearch" class="btn btn-secondary">店舗を検索</button>
-        <button id="btnEstimate" class="btn btn-primary">見積もりを算出</button>
+        <button id="btnSearch" class="btn btn-secondary">対象店舗を表示</button>
+        <button id="btnEstimate" class="btn btn-primary">概算見積もりを表示</button>
       </div>
     </div>
 

@@ -139,7 +139,8 @@ select:focus { outline: none; border-color: #3b82f6; background-color: #fff; box
 .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
 .btn-secondary { background: #6b7280; box-shadow: 0 4px 6px rgba(107, 114, 128, 0.2); }
 .btn-secondary:hover { background: #4b5563; transform: translateY(-1px); }
-.checkbox-list { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+/* ★改修：市区町村の選択エリアを大幅に拡張して見やすく */
+.checkbox-list { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; width: 100%; }
 .checkbox-list label { cursor: pointer; display: flex; align-items: center; font-size: 0.95rem; color: #4b5563; }
 .checkbox-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); accent-color: #3b82f6; }
 .placeholder { color: #9ca3af; font-size: 0.9rem; padding: 4px; }
