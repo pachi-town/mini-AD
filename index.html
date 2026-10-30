@@ -13,7 +13,7 @@
   <script src="script.js" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
-<body>
+<body data-plan="basic">
   <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
     <p>最新のデータを読み込んでいます...</p>
@@ -30,6 +30,55 @@
   </div>
 
   <div class="main-container">
+    
+    <!-- 配信スケジュールタイムライン -->
+    <div class="schedule-panel card">
+      <h3>配信開始までの最短スケジュール <span class="small-text">（起算日：<span id="todayDate"></span>）</span></h3>
+      <div class="timeline">
+        <div class="step">
+          <div class="step-date" id="scheduleInquiry"></div>
+          <div class="step-title">空き確認・問い合わせ</div>
+          <div class="step-desc">配信開始希望日の<br>5週間前が目安</div>
+        </div>
+        <div class="step">
+          <div class="step-date" id="scheduleApply"></div>
+          <div class="step-title">お申し込み</div>
+          <div class="step-desc">配信開始希望日の<br>4週間前が目安</div>
+        </div>
+        <div class="step">
+          <div class="step-date" id="scheduleMaterial"></div>
+          <div class="step-title">素材入稿期日</div>
+          <div class="step-desc">配信開始希望日の<br>3週間前</div>
+        </div>
+        <div class="step highlight">
+          <div class="step-date" id="scheduleRelease"></div>
+          <div class="step-title">最短の配信開始日</div>
+          <div class="step-desc" style="color: #dc2626; font-weight: bold;">上記の日付以降で<br>スケジュール調整をお願いします</div>
+        </div>
+      </div>
+      <div class="schedule-note">
+        ※ご希望の期間に空き枠がない場合もございます。まずは空き状況をお問い合わせください。
+      </div>
+    </div>
+
+    <!-- プラン選択タブ -->
+    <div class="plan-selector">
+      <button class="plan-btn active" data-plan="basic">
+        <span class="plan-name">ベーシックプラン</span>
+        <span class="plan-sub">マルチ ＋ 1面</span>
+      </button>
+      <button class="plan-btn" data-plan="multi">
+        <span class="plan-name">マルチ限定プラン</span>
+        <span class="plan-sub">マルチディスプレイのみ</span>
+        <span class="plan-note" style="display:block; font-size:0.75em; color:#dc2626; margin-top:6px; font-weight:bold;">※市区町村での絞り込みはこちら</span>
+      </button>
+      <button class="plan-btn" data-plan="pos">
+        <span class="plan-name">POSレジプラン</span>
+        <span class="plan-sub">レジ客面画面</span>
+      </button>
+    </div>
+
+    <!-- プラン連動：説明文ゾーン -->
     <div id="descriptionZone" class="description-zone">
       <div class="desc-card multi">
         <h3>マルチディスプレイ</h3>
@@ -74,10 +123,10 @@
           <thead>
             <tr class="centered-header">
               <th>掲載範囲</th>
-              <th>マルチ＋1面の店舗に掲載</th>
-              <th>マルチディスプレイ設置店舗にのみ掲載</th>
-              <th>POSレジ静止画15秒</th>
-              <th>POSレジ動画15秒</th>
+              <th class="col-basic">マルチ＋1面の店舗に掲載</th>
+              <th class="col-multi">マルチディスプレイ設置店舗にのみ掲載</th>
+              <th class="col-pos">POSレジ静止画15秒</th>
+              <th class="col-pos">POSレジ動画15秒</th>
             </tr>
           </thead>
           <tbody id="priceTableBody"></tbody>
@@ -87,11 +136,11 @@
       <div id="calcResultBox" class="calc-result" style="display: none;">
         <div class="price-label">
           選択した市区町村で配信する場合<br>
-          <span style="font-size: 0.9em; font-weight: normal;">（マルチディスプレイ <span id="calcMultiCount" style="font-size: 1.4em; font-weight: bold; color: #dc2626; margin: 0 2px;">0</span> 店舗）</span>
+          <span style="font-size: 0.9em; font-weight: normal;">（対象店舗 <span id="calcMultiCount" style="font-size: 1.4em; font-weight: bold; color: #dc2626; margin: 0 2px;">0</span> 店舗）</span>
         </div>
         <div class="price-value" id="priceValueDisplay"></div>
         <div class="calc-note">
-          ※市区町村で絞り込み配信をした場合、1面店舗は除外されます。<br>
+          ※市区町村で絞り込み配信をした場合、マルチディスプレイ店舗の数で算出されます。<br>
           ※詳細は見積もりを依頼してください。
         </div>
       </div>
@@ -117,7 +166,6 @@
     <!-- 店舗情報表示ゾーン -->
     <div id="resultSection" style="display: none;">
       
-      <!-- リスト・地図の切り替えタブ -->
       <div class="tab-wrapper" style="margin-bottom: 15px;">
         <div class="tabs">
           <button id="btnListView" class="tab active">リスト表示</button>
@@ -125,7 +173,6 @@
         </div>
       </div>
 
-      <!-- リストコンテナ -->
       <div id="listContainer">
         <div class="result-group target-group card">
           <h3 class="group-title target-title">マルチディスプレイ設置店舗</h3>
@@ -161,7 +208,6 @@
         </div>
       </div>
       
-      <!-- マップコンテナ -->
       <div id="mapContainer" class="card" style="display: none; padding: 10px;">
         <div id="map" style="height: 500px; width: 100%; border-radius: 8px; z-index: 1;"></div>
       </div>

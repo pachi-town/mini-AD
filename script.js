@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ★ここに新しいGASのURLを貼り付けてください
+  // ★新しいGASのURL
   const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultBodyMulti = document.getElementById("resultBodyMulti");
   const resultBodySingle = document.getElementById("resultBodySingle");
 
-  // ビュー切り替え用
   const btnListView = document.getElementById("btnListView");
   const btnMapView = document.getElementById("btnMapView");
   const listContainer = document.getElementById("listContainer");
@@ -27,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let availablePrefectures = new Set();
   
   let currentMode = "search"; 
-  let currentTab = "city";    
+  let currentTab = "city";
+  let currentPlan = "basic"; 
 
-  // マップ連携用変数
   let map;
   let markersLayer;
   let isMapInitialized = false;
@@ -47,6 +46,73 @@ document.addEventListener("DOMContentLoaded", () => {
     "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
   };
 
+  function renderSchedule() {
+    const today = new Date();
+    const releaseDate = new Date(today);
+    releaseDate.setDate(today.getDate() + 35); 
+    const applyDate = new Date(releaseDate);
+    applyDate.setDate(releaseDate.getDate() - 28); 
+    const materialDate = new Date(releaseDate);
+    materialDate.setDate(releaseDate.getDate() - 21); 
+
+    const formatDate = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
+
+    document.getElementById('todayDate').textContent = formatDate(today);
+    document.getElementById('scheduleInquiry').textContent = formatDate(today); 
+    document.getElementById('scheduleApply').textContent = formatDate(applyDate);
+    document.getElementById('scheduleMaterial').textContent = formatDate(materialDate);
+    document.getElementById('scheduleRelease').textContent = formatDate(releaseDate);
+  }
+  
+  renderSchedule();
+
+  function updateCityCheckboxesState() {
+    const container = document.getElementById("cityCheckboxes");
+    if (!container) return;
+    
+    const overlayMsgId = "cityDisabledMsg";
+    let msgEl = document.getElementById(overlayMsgId);
+
+    if (currentPlan !== "multi") {
+      container.style.opacity = "0.4";
+      container.style.pointerEvents = "none";
+      container.style.transition = "opacity 0.3s ease";
+      
+      const checkboxes = document.querySelectorAll('.city-checkbox:checked');
+      checkboxes.forEach(cb => cb.checked = false);
+
+      if (!msgEl) {
+        msgEl = document.createElement("div");
+        msgEl.id = overlayMsgId;
+        msgEl.style.color = "#dc2626";
+        msgEl.style.fontSize = "0.85em";
+        msgEl.style.marginTop = "6px";
+        msgEl.style.fontWeight = "bold";
+        msgEl.textContent = "※市区町村での絞り込みは「マルチ限定プラン」選択時のみ可能です";
+        container.parentNode.insertBefore(msgEl, container.nextSibling);
+      } else {
+        msgEl.style.display = "block";
+      }
+    } else {
+      container.style.opacity = "1";
+      container.style.pointerEvents = "auto";
+      if (msgEl) msgEl.style.display = "none";
+    }
+  }
+
+  document.querySelectorAll('.plan-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+      const target = e.currentTarget;
+      target.classList.add('active');
+      currentPlan = target.getAttribute('data-plan');
+      
+      document.body.setAttribute('data-plan', currentPlan);
+      updateCityCheckboxesState();
+      updateView();
+    });
+  });
+
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
@@ -63,13 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (data.headerBanner && data.headerBanner.imageUrl) {
         document.getElementById("headerBannerImage").src = data.headerBanner.imageUrl;
         const hbLink = document.getElementById("headerBannerLink");
-        if (data.headerBanner.linkUrl) {
-          hbLink.href = data.headerBanner.linkUrl;
-          hbLink.style.cursor = "pointer";
-        } else {
-          hbLink.removeAttribute("href");
-          hbLink.style.cursor = "default";
-        }
+        if (data.headerBanner.linkUrl) hbLink.href = data.headerBanner.linkUrl;
         document.getElementById("headerBannerContainer").style.display = "block";
       }
 
@@ -78,25 +138,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const adImage = document.getElementById("adBannerImage");
         const adLink = document.getElementById("adBannerLink");
         let currentAdIndex = 0;
-
         const updateAd = (index) => {
           adImage.style.opacity = 0; 
           setTimeout(() => {
             adImage.src = data.ads[index].imageUrl;
-            if (data.ads[index].linkUrl) {
-              adLink.href = data.ads[index].linkUrl;
-              adLink.style.cursor = "pointer";
-            } else {
-              adLink.removeAttribute("href");
-              adLink.style.cursor = "default";
-            }
+            if (data.ads[index].linkUrl) adLink.href = data.ads[index].linkUrl;
             adImage.style.opacity = 1; 
           }, 400); 
         };
-
         updateAd(0);
         adContainer.style.display = "block";
-
         if (data.ads.length > 1) {
           setInterval(() => {
             currentAdIndex = (currentAdIndex + 1) % data.ads.length;
@@ -114,6 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       structureStores(allStoresRaw); 
       populateAreaSelect(); 
       populatePrefectureSelect(""); 
+      updateCityCheckboxesState(); 
       
       loadingOverlay.style.display = "none";
     })
@@ -122,19 +174,16 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingOverlay.innerHTML = "<p style='color: red; font-weight: bold;'>データの読み込みに失敗しました。</p>";
     });
 
-  // マップの初期化
   function initMap() {
     if (isMapInitialized) return;
-    // 日本全体が入るようにズームレベル5で初期化
     map = L.map('map').setView([35.681236, 139.767125], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+      attribution: '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">国土地理院</a>'
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
     isMapInitialized = true;
   }
 
-  // 表示の切り替え（リスト/地図）
   btnListView.addEventListener("click", () => {
     btnListView.classList.add("active");
     btnMapView.classList.remove("active");
@@ -147,15 +196,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnListView.classList.remove("active");
     listContainer.style.display = "none";
     mapContainer.style.display = "block";
-    
-    if (!isMapInitialized) {
-      initMap();
-    }
-    // divが表示された直後にサイズを再計算させる
-    setTimeout(() => {
-      map.invalidateSize();
-      updateMapMarkers();
-    }, 100);
+    if (!isMapInitialized) initMap();
+    setTimeout(() => { map.invalidateSize(); updateMapMarkers(); }, 100);
   });
 
   function structureStores(stores) {
@@ -211,36 +253,15 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       container.innerHTML = '<div class="placeholder">都道府県を選択してください</div>';
     }
+    updateCityCheckboxesState(); 
   }
 
-  areaSelect.addEventListener("change", () => {
-    populatePrefectureSelect(areaSelect.value); 
-    updateView();
-  });
-  prefectureSelect.addEventListener("change", () => {
-    populateCitySelect(prefectureSelect.value); 
-    updateView();
-  });
-  btnSearch.addEventListener("click", () => {
-    currentMode = "search";
-    updateView();
-  });
-  btnEstimate.addEventListener("click", () => {
-    currentMode = "estimate";
-    updateView();
-  });
-  tabCity.addEventListener("click", () => {
-    currentTab = "city";
-    tabCity.classList.add("active");
-    tabPref.classList.remove("active");
-    updateView();
-  });
-  tabPref.addEventListener("click", () => {
-    currentTab = "pref";
-    tabPref.classList.add("active");
-    tabCity.classList.remove("active");
-    updateView();
-  });
+  areaSelect.addEventListener("change", () => { populatePrefectureSelect(areaSelect.value); updateView(); });
+  prefectureSelect.addEventListener("change", () => { populateCitySelect(prefectureSelect.value); updateView(); });
+  btnSearch.addEventListener("click", () => { currentMode = "search"; updateView(); });
+  btnEstimate.addEventListener("click", () => { currentMode = "estimate"; updateView(); });
+  tabCity.addEventListener("click", () => { currentTab = "city"; tabCity.classList.add("active"); tabPref.classList.remove("active"); updateView(); });
+  tabPref.addEventListener("click", () => { currentTab = "pref"; tabPref.classList.add("active"); tabCity.classList.remove("active"); updateView(); });
 
   function updateView() {
     const selectedArea = areaSelect.value;
@@ -289,20 +310,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
-    currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
+    
+    if (currentPlan === "multi") {
+      currentSingleStores = [];
+    } else {
+      currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
+    }
 
     updateStoreSummary(currentMultiStores.length, currentSingleStores.length);
     renderTables(currentMultiStores, currentSingleStores);
     
-    // 地図が表示中の場合はマーカーも更新
-    if (mapContainer.style.display === "block") {
-      updateMapMarkers();
-    }
+    if (mapContainer.style.display === "block") updateMapMarkers();
 
     if (currentMode === "estimate") {
       document.getElementById('priceSection').style.display = 'block';
       updatePriceTable(selectedArea, selectedPrefecture);
-
       if (selectedCities.length > 0 && currentTab === "city") {
         document.getElementById('calcResultBox').style.display = 'flex';
         calculateAndShowPrice(currentMultiStores.length);
@@ -316,44 +338,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderTables(multiStores, singleStores) {
-    const createRow = (store, typeLabel) => {
-      const fullAddress = `${store.都道府県}${store.市区町村}${store.住所}`;
-      return `<tr><td>${typeLabel}</td><td>${store.店名}</td><td>${fullAddress}</td></tr>`;
-    };
-
-    resultBodyMulti.innerHTML = multiStores.length > 0 
-      ? multiStores.map(s => createRow(s, "マルチディスプレイ")).join('') 
-      : '<tr><td colspan="3">該当する店舗がありません。</td></tr>';
-      
-    resultBodySingle.innerHTML = singleStores.length > 0 
-      ? singleStores.map(s => createRow(s, "1面のみ")).join('') 
-      : '<tr><td colspan="3">該当する店舗がありません。</td></tr>';
+    const createRow = (store, typeLabel) => `<tr><td>${typeLabel}</td><td>${store.店名}</td><td>${store.都道府県}${store.市区町村}${store.住所}</td></tr>`;
+    resultBodyMulti.innerHTML = multiStores.length > 0 ? multiStores.map(s => createRow(s, "マルチディスプレイ")).join('') : '<tr><td colspan="3">該当する店舗がありません。</td></tr>';
+    resultBodySingle.innerHTML = singleStores.length > 0 ? singleStores.map(s => createRow(s, "1面のみ")).join('') : '<tr><td colspan="3">該当する店舗がありません。</td></tr>';
   }
 
   function updateMapMarkers() {
     if (!map || !markersLayer) return;
     markersLayer.clearLayers(); 
-
     let bounds = L.latLngBounds();
     let hasValidMarkers = false;
 
     const addMarker = (store, typeLabel, colorHex) => {
-      const lat = parseFloat(store['緯度']);
-      const lng = parseFloat(store['経度']);
+      const lat = parseFloat(store['緯度']), lng = parseFloat(store['経度']);
       if (isNaN(lat) || isNaN(lng)) return;
-
-      const fullAddress = `${store.都道府県}${store.市区町村}${store.住所}`;
-      
-      const marker = L.circleMarker([lat, lng], {
-        radius: 7,
-        fillColor: colorHex,
-        color: "#fff",
-        weight: 1.5,
-        opacity: 1,
-        fillOpacity: 0.9
-      });
-      
-      marker.bindPopup(`<b>${store.店名}</b><br><span style="color:${colorHex};font-size:0.85em;">${typeLabel}</span><br><span style="font-size:0.85em;">${fullAddress}</span>`);
+      const marker = L.circleMarker([lat, lng], { radius: 7, fillColor: colorHex, color: "#fff", weight: 1.5, opacity: 1, fillOpacity: 0.9 });
+      marker.bindPopup(`<b>${store.店名}</b><br><span style="color:${colorHex};font-size:0.85em;">${typeLabel}</span><br><span style="font-size:0.85em;">${store.都道府県}${store.市区町村}${store.住所}</span>`);
       markersLayer.addLayer(marker);
       bounds.extend([lat, lng]);
       hasValidMarkers = true;
@@ -362,11 +362,8 @@ document.addEventListener("DOMContentLoaded", () => {
     currentMultiStores.forEach(s => addMarker(s, "マルチディスプレイ", "#0ea5e9"));
     currentSingleStores.forEach(s => addMarker(s, "1面のみ", "#64748b"));
 
-    if (hasValidMarkers) {
-      map.fitBounds(bounds, { padding: [30, 30] });
-    } else {
-      map.setView([35.681236, 139.767125], 5);
-    }
+    if (hasValidMarkers) map.fitBounds(bounds, { padding: [30, 30] });
+    else map.setView([35.681236, 139.767125], 5);
   }
 
   function calculateAndShowPrice(multiCount) {
@@ -374,21 +371,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof volumePrices !== 'undefined' && volumePrices.length > 0) {
       for (let i = 0; i < volumePrices.length; i++) {
         if (multiCount >= volumePrices[i]["下限店舗数"] && multiCount <= volumePrices[i]["上限店舗数"]) {
-          calculatedPrice = volumePrices[i]["価格"];
-          break;
+          calculatedPrice = volumePrices[i]["価格"]; break;
         }
       }
     }
-    
-    const calcMultiCountEl = document.getElementById("calcMultiCount");
-    if (calcMultiCountEl) calcMultiCountEl.textContent = multiCount;
-    
-    const priceDisplayEl = document.getElementById("priceValueDisplay");
-    if (calculatedPrice === 0) {
-      priceDisplayEl.innerHTML = '<span style="font-size: 0.65em;">対象外 地点数を増やしてください</span>';
-    } else {
-      priceDisplayEl.innerHTML = `概算 <span>${calculatedPrice.toLocaleString()}</span> 円`;
-    }
+    document.getElementById("calcMultiCount").textContent = multiCount;
+    const el = document.getElementById("priceValueDisplay");
+    el.innerHTML = calculatedPrice === 0 ? '<span style="font-size: 0.65em;">対象外 地点数を増やしてください</span>' : `概算 <span>${calculatedPrice.toLocaleString()}</span> 円`;
   }
 
   function updateStoreSummary(multiCount, singleCount) {
@@ -411,19 +400,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updatePriceTable(selectedArea, selectedPrefecture) {
-    priceTableBody.innerHTML = ""; 
-    const addPriceRow = (regionName, priceData, isHighlighted = false) => {
-      if (!priceData) return; 
+    const tbody = document.getElementById("priceTableBody");
+    tbody.innerHTML = ""; 
+    const addPriceRow = (regionName, data, isHighlighted = false) => {
+      if (!data) return; 
       const row = document.createElement("tr");
       if (isHighlighted) row.classList.add("highlight-pref-price"); 
       row.innerHTML = `
         <td>${regionName}</td>
-        <td>${priceData["ベーシック"] === "対象外" ? "対象外" : priceData["ベーシック"].toLocaleString() + "円"}</td>
-        <td>${priceData["マルチのみ"] === "対象外" ? "対象外" : priceData["マルチのみ"].toLocaleString() + "円"}</td>
-        <td>${priceData["POS静止画"] === "対象外" ? "対象外" : priceData["POS静止画"].toLocaleString() + "円"}</td>
-        <td>${priceData["POS動画"] === "対象外" ? "対象外" : priceData["POS動画"].toLocaleString() + "円"}</td>
+        <td class="col-basic">${data["ベーシック"] === "対象外" ? "対象外" : data["ベーシック"].toLocaleString() + "円"}</td>
+        <td class="col-multi">${data["マルチのみ"] === "対象外" ? "対象外" : data["マルチのみ"].toLocaleString() + "円"}</td>
+        <td class="col-pos">${data["POS静止画"] === "対象外" ? "対象外" : data["POS静止画"].toLocaleString() + "円"}</td>
+        <td class="col-pos">${data["POS動画"] === "対象外" ? "対象外" : data["POS動画"].toLocaleString() + "円"}</td>
       `;
-      priceTableBody.appendChild(row);
+      tbody.appendChild(row);
     };
 
     const checkedBoxes = document.querySelectorAll('.city-checkbox:checked');
@@ -432,8 +422,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (allPrices[selectedPrefecture]) addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true);
     } else {
         if (allPrices["全国"]) addPriceRow("全国", allPrices["全国"]);
-        let areaPriceKey = selectedArea === "九州・沖縄" ? "九州" : (selectedArea === "近畿" ? "近畿北陸" : selectedArea);
-        if (selectedArea && allPrices[areaPriceKey]) addPriceRow(selectedArea, allPrices[areaPriceKey]);
+        let areaKey = selectedArea === "九州・沖縄" ? "九州" : (selectedArea === "近畿" ? "近畿北陸" : selectedArea);
+        if (selectedArea && allPrices[areaKey]) addPriceRow(selectedArea, allPrices[areaKey]);
         if (selectedPrefecture && allPrices[selectedPrefecture]) addPriceRow(selectedPrefecture, allPrices[selectedPrefecture], true);
     }
   }
