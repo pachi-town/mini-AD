@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ★改修：プラン切り替え時の連動処理
+  // プラン切り替え
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.setAttribute('data-plan', currentPlan);
       updateCityCheckboxesState();
       
-      // プランを切り替えたら、検索結果を新しいプランに基づいて再計算・再描画する
       if (hasSearched) executeSearch(); 
     });
   });
@@ -353,17 +352,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // ★改修：現在のプラン状態に応じてリストを正しくフィルタリング
     if (currentPlan === "multi") {
-      // マルチのみプランの場合：マルチは表示、1面は空にする
       currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
       currentSingleStores = [];
     } else if (currentPlan === "pos") {
-      // POSレジプランの場合：リスト上は全て表示して合計を出すが、サマリー上は全て対象になる
       currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
       currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
     } else {
-      // ベーシックプランの場合：両方表示
       currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
       currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
     }
@@ -427,7 +422,6 @@ document.addEventListener("DOMContentLoaded", () => {
     el.innerHTML = calculatedPrice === 0 ? '<span style="font-size: 0.65em;">対象外 地点数を増やしてください</span>' : `概算 <span>${calculatedPrice.toLocaleString()}</span> 円`;
   }
 
-  // ★改修：アコーディオンヘッダー内のバッジへ店舗数を反映（対象外ロジック追加）
   function updateStoreSummary(multiCount, singleCount) {
     const totalCount = multiCount + singleCount;
     
@@ -443,7 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const badgePosUnit = document.getElementById("badgePosUnit");
     const badgePos = document.getElementById("badgePos");
 
-    // マルチディスプレイの処理
     if (badgeMulti) {
       if (currentPlan === "pos") {
         badgeMultiNum.textContent = "配信対象外";
@@ -457,7 +450,6 @@ document.addEventListener("DOMContentLoaded", () => {
       badgeMulti.style.display = "inline-flex";
     }
 
-    // 1面ディスプレイの処理
     if (badgeSingle) {
       if (currentPlan === "multi" || currentPlan === "pos") {
         badgeSingleNum.textContent = "配信対象外";
@@ -471,7 +463,6 @@ document.addEventListener("DOMContentLoaded", () => {
       badgeSingle.style.display = "inline-flex";
     }
 
-    // POSレジの処理
     if (badgePos) {
       if (currentPlan === "multi" || currentPlan === "basic") {
         badgePosNum.textContent = "配信対象外";
@@ -485,7 +476,6 @@ document.addEventListener("DOMContentLoaded", () => {
       badgePos.style.display = "inline-flex";
     }
 
-    // 古い独立サマリーコンテナは非表示を維持
     const summaryContainer = document.getElementById("storeSummary");
     if(summaryContainer) summaryContainer.style.display = "none";
   }
