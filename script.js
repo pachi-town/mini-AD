@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
   };
 
-  // 1. スケジュール描画
+  // スケジュール描画
   function renderSchedule() {
     const today = new Date();
     const releaseDate = new Date(today);
@@ -64,13 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('scheduleMaterial').textContent = formatDate(materialDate);
     document.getElementById('scheduleRelease').textContent = formatDate(releaseDate);
     
-    // スマホ版専用の最短配信日テキスト
     const spReleaseEl = document.getElementById('spReleaseDate');
     if(spReleaseEl) spReleaseEl.textContent = formatDate(releaseDate);
   }
   renderSchedule();
 
-  // 2. ★SP用：スケジュールのアコーディオン制御
+  // SP用：スケジュールのアコーディオン制御
   document.getElementById('scheduleAccordionToggle').addEventListener('click', () => {
     if (window.innerWidth <= 768) {
       const body = document.getElementById('scheduleAccordionContent');
@@ -80,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 3. ★SP用：商材説明（各カード）のアコーディオン制御
+  // SP用：商材説明のアコーディオン制御
   document.querySelectorAll('.desc-header').forEach(header => {
     header.addEventListener('click', () => {
       if (window.innerWidth <= 768) {
@@ -92,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 4. 市区町村チェックボックスのロック制御
+  // 市区町村チェックボックスのロック制御
   function updateCityCheckboxesState() {
     const container = document.getElementById("cityCheckboxes");
     if (!container) return;
@@ -124,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 5. プラン切り替え
+  // ★改修：プラン切り替え時の連動処理
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -135,11 +134,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.setAttribute('data-plan', currentPlan);
       updateCityCheckboxesState();
       
+      // プランを切り替えたら、検索結果を新しいプランに基づいて再計算・再描画する
       if (hasSearched) executeSearch(); 
     });
   });
 
-  // 6. データ取得とセレクトボックス生成
+  // データ取得とセレクトボックス生成
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
@@ -258,12 +258,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCityCheckboxesState(); 
   }
 
-  // 7. 検索ボタンと見積もりスイッチの実行アクション
+  // 検索ボタンと見積もりスイッチの実行アクション
   btnSearch.addEventListener("click", () => {
     hasSearched = true;
     searchResultArea.style.display = "block";
     
-    // ボタンアニメーション
     const originalText = btnSearch.textContent;
     btnSearch.textContent = "検索しました！ ✔";
     btnSearch.style.backgroundColor = "#2563eb";
@@ -354,15 +353,24 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
+    // ★改修：現在のプラン状態に応じてリストを正しくフィルタリング
     if (currentPlan === "multi") {
+      // マルチのみプランの場合：マルチは表示、1面は空にする
+      currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
       currentSingleStores = [];
+    } else if (currentPlan === "pos") {
+      // POSレジプランの場合：リスト上は全て表示して合計を出すが、サマリー上は全て対象になる
+      currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
+      currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
     } else {
+      // ベーシックプランの場合：両方表示
+      currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
       currentSingleStores = filteredStores.filter(store => String(store.サイネージ) === "1");
     }
 
     updateStoreSummary(currentMultiStores.length, currentSingleStores.length);
     renderTables(currentMultiStores, currentSingleStores);
+    
     if (mapContainer.style.display === "block") updateMapMarkers();
 
     if (toggleEstimate.checked) {
@@ -419,22 +427,67 @@ document.addEventListener("DOMContentLoaded", () => {
     el.innerHTML = calculatedPrice === 0 ? '<span style="font-size: 0.65em;">対象外 地点数を増やしてください</span>' : `概算 <span>${calculatedPrice.toLocaleString()}</span> 円`;
   }
 
+  // ★改修：アコーディオンヘッダー内のバッジへ店舗数を反映（対象外ロジック追加）
   function updateStoreSummary(multiCount, singleCount) {
     const totalCount = multiCount + singleCount;
-    document.getElementById("storeSummary").innerHTML = `
-      <div class="summary-widget target">
-        <div class="widget-title">マルチディスプレイ</div>
-        <div class="widget-value"><span class="count">${multiCount}</span><span class="unit">店舗</span></div>
-      </div>
-      <div class="summary-widget excluded">
-        <div class="widget-title">1面ディスプレイ</div>
-        <div class="widget-value"><span class="count">${singleCount}</span><span class="unit">店舗</span></div>
-      </div>
-      <div class="summary-widget total">
-        <div class="widget-title">合計</div>
-        <div class="widget-value"><span class="count">${totalCount}</span><span class="unit">店舗</span></div>
-      </div>
-    `;
+    
+    const badgeMultiNum = document.getElementById("badgeMultiNum");
+    const badgeMultiUnit = document.getElementById("badgeMultiUnit");
+    const badgeMulti = document.getElementById("badgeMulti");
+
+    const badgeSingleNum = document.getElementById("badgeSingleNum");
+    const badgeSingleUnit = document.getElementById("badgeSingleUnit");
+    const badgeSingle = document.getElementById("badgeSingle");
+
+    const badgePosNum = document.getElementById("badgePosNum");
+    const badgePosUnit = document.getElementById("badgePosUnit");
+    const badgePos = document.getElementById("badgePos");
+
+    // マルチディスプレイの処理
+    if (badgeMulti) {
+      if (currentPlan === "pos") {
+        badgeMultiNum.textContent = "配信対象外";
+        badgeMultiNum.style.fontSize = "0.85em";
+        badgeMultiUnit.style.display = "none";
+      } else {
+        badgeMultiNum.textContent = multiCount;
+        badgeMultiNum.style.fontSize = "";
+        badgeMultiUnit.style.display = "inline";
+      }
+      badgeMulti.style.display = "inline-flex";
+    }
+
+    // 1面ディスプレイの処理
+    if (badgeSingle) {
+      if (currentPlan === "multi" || currentPlan === "pos") {
+        badgeSingleNum.textContent = "配信対象外";
+        badgeSingleNum.style.fontSize = "0.85em";
+        badgeSingleUnit.style.display = "none";
+      } else {
+        badgeSingleNum.textContent = singleCount;
+        badgeSingleNum.style.fontSize = "";
+        badgeSingleUnit.style.display = "inline";
+      }
+      badgeSingle.style.display = "inline-flex";
+    }
+
+    // POSレジの処理
+    if (badgePos) {
+      if (currentPlan === "multi" || currentPlan === "basic") {
+        badgePosNum.textContent = "配信対象外";
+        badgePosNum.style.fontSize = "0.85em";
+        badgePosUnit.style.display = "none";
+      } else {
+        badgePosNum.textContent = totalCount;
+        badgePosNum.style.fontSize = "";
+        badgePosUnit.style.display = "inline";
+      }
+      badgePos.style.display = "inline-flex";
+    }
+
+    // 古い独立サマリーコンテナは非表示を維持
+    const summaryContainer = document.getElementById("storeSummary");
+    if(summaryContainer) summaryContainer.style.display = "none";
   }
 
   function updatePriceTable(selectedArea, selectedPrefecture) {

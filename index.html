@@ -31,7 +31,7 @@
 
   <div class="main-container">
     
-    <!-- 配信スケジュールタイムライン（SP時アコーディオン化） -->
+    <!-- 配信スケジュールタイムライン -->
     <div class="schedule-panel card">
       <div class="schedule-header" id="scheduleAccordionToggle">
         <div class="schedule-header-text">
@@ -93,41 +93,6 @@
         <span class="plan-name sp-only">POSレジ</span>
         <span class="plan-sub">レジ客面画面</span>
       </button>
-    </div>
-
-    <!-- 商材説明ゾーン（各カード独立アコーディオン） -->
-    <div id="descriptionZone" class="description-zone">
-      
-      <div class="desc-card multi">
-        <div class="desc-header">
-          <h3>マルチディスプレイ</h3>
-          <span class="acc-icon sp-only">▼</span>
-        </div>
-        <div class="desc-body">
-          <p id="descMultiText">※データを読み込んでいます...</p>
-        </div>
-      </div>
-
-      <div class="desc-card single">
-        <div class="desc-header">
-          <h3>1面ディスプレイ</h3>
-          <span class="acc-icon sp-only">▼</span>
-        </div>
-        <div class="desc-body">
-          <p id="descSingleText">※データを読み込んでいます...</p>
-        </div>
-      </div>
-
-      <div class="desc-card pos">
-        <div class="desc-header">
-          <h3>POSレジ</h3>
-          <span class="acc-icon sp-only">▼</span>
-        </div>
-        <div class="desc-body">
-          <p id="descPosText">※データを読み込んでいます...</p>
-        </div>
-      </div>
-
     </div>
 
     <!-- 検索コントロールエリア -->
@@ -196,9 +161,63 @@
       </div>
     </div>
 
+    <!-- 商材説明ゾーン（店舗数バッジを合体） -->
+    <div id="descriptionZone" class="description-zone">
+      
+      <div class="desc-card multi">
+        <div class="desc-header">
+          <div class="desc-title-group">
+            <h3>マルチディスプレイ</h3>
+            <div id="badgeMulti" class="store-badge multi-badge" style="display: none;">
+              <span class="badge-num" id="badgeMultiNum">0</span>
+              <span class="badge-unit" id="badgeMultiUnit">店舗</span>
+            </div>
+          </div>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descMultiText">※データを読み込んでいます...</p>
+        </div>
+      </div>
+
+      <div class="desc-card single">
+        <div class="desc-header">
+          <div class="desc-title-group">
+            <h3>1面ディスプレイ</h3>
+            <div id="badgeSingle" class="store-badge single-badge" style="display: none;">
+              <span class="badge-num" id="badgeSingleNum">0</span>
+              <span class="badge-unit" id="badgeSingleUnit">店舗</span>
+            </div>
+          </div>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descSingleText">※データを読み込んでいます...</p>
+        </div>
+      </div>
+
+      <div class="desc-card pos">
+        <div class="desc-header">
+          <div class="desc-title-group">
+            <h3>POSレジ</h3>
+            <div id="badgePos" class="store-badge pos-badge" style="display: none;">
+              <span class="badge-num" id="badgePosNum">0</span>
+              <span class="badge-unit" id="badgePosUnit">店舗(合計)</span>
+            </div>
+          </div>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descPosText">※データを読み込んでいます...</p>
+        </div>
+      </div>
+
+    </div>
+
     <!-- 検索結果エリア（初期は非表示、ボタン押下で表示） -->
     <div id="searchResultArea" style="display: none;">
-      <div id="storeSummary" class="summary-container"></div>
+      <!-- 元の独立したサマリーコンテナ（JSで非表示化されます） -->
+      <div id="storeSummary" class="summary-container" style="display: none;"></div>
 
       <div id="adBannerContainer" class="ad-banner-container" style="display: none;">
         <a id="adBannerLink" href="#" target="_blank" rel="noopener noreferrer">
