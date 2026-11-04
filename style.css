@@ -26,7 +26,6 @@ h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 .schedule-panel { margin-bottom: 30px; }
 .schedule-header { display: flex; justify-content: space-between; align-items: center; }
 
-/* スケジュールタイトルのレイアウト */
 .schedule-title { margin-bottom: 0; display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 8px; }
 .title-main { color: #dc2626; }
 .title-sub { font-size: 0.85em; color: #6b7280; font-weight: normal; }
@@ -47,22 +46,11 @@ h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 /* =========================================
    Plan Selector Tabs
    ========================================= */
-/* ★改修：最強の均等配置（Gridレイアウト）を導入 */
 .plan-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
 .plan-btn { 
-  width: 100%; 
-  background: #fff; 
-  border: 2px solid #e5e7eb; 
-  border-radius: 12px; 
-  padding: 16px 5px; 
-  cursor: pointer; 
-  transition: all 0.2s; 
-  text-align: center; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  width: 100%; background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px 5px; 
+  cursor: pointer; transition: all 0.2s; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
 .plan-btn:hover { border-color: #9ca3af; transform: translateY(-2px); }
 .plan-btn.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 4px 10px rgba(59,130,246,0.15); }
@@ -111,9 +99,7 @@ body[data-plan="basic"] .desc-card.pos,
 body[data-plan="multi"] .desc-card.single,
 body[data-plan="multi"] .desc-card.pos,
 body[data-plan="pos"] .desc-card.multi,
-body[data-plan="pos"] .desc-card.single {
-  opacity: 0.35; filter: grayscale(100%); transform: scale(0.98); pointer-events: none;
-}
+body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%); transform: scale(0.98); pointer-events: none; }
 
 /* =========================================
    Banners
@@ -124,30 +110,36 @@ body[data-plan="pos"] .desc-card.single {
 .ad-banner-container img { transition: opacity 0.4s ease-in-out; opacity: 1; }
 
 /* =========================================
-   Controls & Toggle Switch
+   ★改修：Controls & Toggle Switch (PC完全横並び化)
    ========================================= */
-/* ★改修：セレクトボックス周りのレイアウト最適化（SP時の横幅強制） */
 .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 24px; margin-bottom: 20px; }
-.controls { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: flex-start; }
-.filter-section { display: flex; flex-wrap: wrap; gap: 20px; flex: 1; width: 100%; }
-.select-group { display: flex; flex-direction: column; gap: 12px; min-width: 200px; width: 100%; }
-.city-select-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 240px; width: 100%; }
-.action-section { display: flex; flex-direction: column; gap: 20px; min-width: 220px; justify-content: center; align-items: flex-end; width: 100%; }
 
-select { padding: 10px 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f9fafb; cursor: pointer; color: #374151; width: 100%; box-sizing: border-box; }
-.checkbox-list { border: 1px solid #d1d5db; border-radius: 8px; padding: 10px; background: #f9fafb; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; width: 100%; box-sizing: border-box; }
-.checkbox-list label { cursor: pointer; display: flex; align-items: center; font-size: 0.95rem; color: #4b5563; }
-.checkbox-list input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); accent-color: #3b82f6; }
-.placeholder { color: #9ca3af; font-size: 0.9rem; padding: 4px; }
+/* PC時は横一列の美しいレイアウト */
+.controls { display: flex; flex-direction: row; gap: 24px; align-items: stretch; }
+.filter-section { display: flex; flex-direction: row; gap: 20px; flex: 1; min-width: 0; }
 
-/* 検索ボタン */
-.btn { font-weight: 600; text-align: center; border: none; color: #fff; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-size: 1rem; box-sizing: border-box; }
-.btn-large { padding: 16px 24px; font-size: 1.1rem; width: 100%; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+/* エリア・都道府県は縦積みにして左に寄せる */
+.select-group { display: flex; flex-direction: column; justify-content: space-between; width: 220px; flex-shrink: 0; gap: 12px; }
+/* 市区町村は真ん中で広く取る */
+.city-select-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
+
+/* アクションボタンは右端に縦積み */
+.action-section { display: flex; flex-direction: column; gap: 16px; width: 260px; flex-shrink: 0; justify-content: space-between; }
+
+select { padding: 0 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f9fafb; cursor: pointer; color: #374151; width: 100%; height: 46px; }
+
+/* PCのチェックボックスはCSS Gridで多段組みにしてスペースを節約 */
+.checkbox-list { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: #f9fafb; max-height: 120px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px 12px; align-content: flex-start; }
+.checkbox-list label { cursor: pointer; display: flex; align-items: center; font-size: 0.95rem; color: #4b5563; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.checkbox-list input[type="checkbox"] { margin-right: 8px; transform: scale(1.1); accent-color: #3b82f6; flex-shrink: 0;}
+.placeholder { color: #9ca3af; font-size: 0.9rem; padding: 4px; grid-column: 1 / -1; }
+
+.btn { font-weight: 600; text-align: center; border: none; color: #fff; padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-size: 1rem; }
+.btn-large { flex: 1; font-size: 1.05rem; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; min-height: 52px; }
 .btn-primary { background: #3b82f6; }
 .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
 
-/* 見積もりトグルスイッチ */
-.toggle-wrapper { display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; justify-content: space-between; box-sizing: border-box;}
+.toggle-wrapper { flex: 1; display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0; justify-content: space-between; min-height: 52px; }
 .toggle-label { font-weight: bold; color: #4b5563; font-size: 0.95rem;}
 .switch { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0;}
 .switch input { opacity: 0; width: 0; height: 0; }
@@ -226,19 +218,27 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
   .acc-icon.is-open { transform: rotate(180deg); }
   .desc-card p img { height: auto !important; max-height: 200px !important; }
   
-  /* ★改修：プランタブのスマホ横並び（Gridレイアウトで強制的かつ絶対的に高さを揃え、改行を防ぐ） */
   .plan-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
   .plan-btn { padding: 8px 2px; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
   .plan-name { font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; letter-spacing: -0.5px; }
   .plan-sub { font-size: 0.65rem; white-space: nowrap; }
   .plan-note { font-size: 0.6rem !important; margin-top: 2px !important; line-height: 1.1; width: 100%; white-space: nowrap; letter-spacing: -1px; transform: scale(0.95); }
   
-  /* ★改修：コントロールエリアの幅を強制的に100%に広げる */
-  .controls { display: flex; flex-direction: column; gap: 16px; padding: 16px; width: 100%; box-sizing: border-box; }
-  .filter-section { display: flex; flex-direction: column; gap: 16px; width: 100%; }
-  .select-group, .city-select-group { width: 100%; min-width: 100%; }
-  .checkbox-list { max-height: 160px; width: 100%; }
-  .action-section { width: 100%; align-items: stretch; gap: 12px;}
+  /* ★SP時はコンパクトな縦並び・横並びのハイブリッド構成 */
+  .controls { flex-direction: column; gap: 16px; padding: 16px; width: 100%; box-sizing: border-box; }
+  .filter-section { flex-direction: column; gap: 16px; width: 100%; }
+  
+  .select-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+  .select-group select { height: 44px; }
+  
+  .city-select-group { width: 100%; }
+  .checkbox-list { display: flex; flex-direction: column; max-height: 150px; width: 100%; }
+  
+  .action-section { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; align-items: stretch; flex-direction: row; }
+  .btn-large { padding: 8px; font-size: 0.95rem; height: auto; min-height: 56px; display: flex; align-items: center; justify-content: center; margin: 0; }
+  
+  .toggle-wrapper { flex-direction: column; justify-content: center; align-items: center; gap: 6px; padding: 8px; height: auto; min-height: 56px; margin: 0; }
+  .toggle-label { font-size: 0.8rem; text-align: center; line-height: 1.2; }
   
   .scroll-hint.mobile-only { display: block; text-align: right; font-size: 0.8em; color: #9ca3af; padding: 8px 16px; background: #fff; margin: 0; }
 }
