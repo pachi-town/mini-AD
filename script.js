@@ -63,30 +63,36 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('scheduleApply').textContent = formatDate(applyDate);
     document.getElementById('scheduleMaterial').textContent = formatDate(materialDate);
     document.getElementById('scheduleRelease').textContent = formatDate(releaseDate);
+    
+    // スマホ版専用の最短配信日テキスト
+    const spReleaseEl = document.getElementById('spReleaseDate');
+    if(spReleaseEl) spReleaseEl.textContent = formatDate(releaseDate);
   }
   renderSchedule();
 
-  // 2. アコーディオンの制御（PCは開く、SPは閉じる）
-  const accToggle = document.getElementById("descAccordionToggle");
-  const accContent = document.getElementById("descAccordionContent");
-  const accIcon = document.getElementById("descAccIcon");
-  
-  if (window.innerWidth <= 768) {
-    accContent.classList.add("is-closed");
-    accIcon.textContent = "▶︎";
-  }
-  
-  accToggle.addEventListener("click", () => {
-    if (accContent.classList.contains("is-closed")) {
-      accContent.classList.remove("is-closed");
-      accIcon.textContent = "▼";
-    } else {
-      accContent.classList.add("is-closed");
-      accIcon.textContent = "▶︎";
+  // 2. ★SP用：スケジュールのアコーディオン制御
+  document.getElementById('scheduleAccordionToggle').addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      const body = document.getElementById('scheduleAccordionContent');
+      const icon = document.getElementById('scheduleAccIcon');
+      body.classList.toggle('is-open');
+      if (icon) icon.classList.toggle('is-open');
     }
   });
 
-  // 3. 市区町村チェックボックスのロック制御
+  // 3. ★SP用：商材説明（各カード）のアコーディオン制御
+  document.querySelectorAll('.desc-header').forEach(header => {
+    header.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        const body = header.nextElementSibling;
+        const icon = header.querySelector('.acc-icon');
+        body.classList.toggle('is-open');
+        if (icon) icon.classList.toggle('is-open');
+      }
+    });
+  });
+
+  // 4. 市区町村チェックボックスのロック制御
   function updateCityCheckboxesState() {
     const container = document.getElementById("cityCheckboxes");
     if (!container) return;
@@ -118,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 4. プラン切り替え
+  // 5. プラン切り替え
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -129,12 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.setAttribute('data-plan', currentPlan);
       updateCityCheckboxesState();
       
-      // すでに検索済みなら結果も連動して更新
       if (hasSearched) executeSearch(); 
     });
   });
 
-  // 5. データ取得とセレクトボックス生成
+  // 6. データ取得とセレクトボックス生成
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
@@ -195,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingOverlay.innerHTML = "<p style='color: red; font-weight: bold;'>データの読み込みに失敗しました。</p>";
     });
 
-  // セレクトボックスの連動（ここでは自動検索は走らせない）
   areaSelect.addEventListener("change", () => populatePrefectureSelect(areaSelect.value));
   prefectureSelect.addEventListener("change", () => populateCitySelect(prefectureSelect.value));
 
@@ -254,33 +258,32 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCityCheckboxesState(); 
   }
 
-  // 6. 検索・見積もりの実行アクション
+  // 7. 検索ボタンと見積もりスイッチの実行アクション
   btnSearch.addEventListener("click", () => {
     hasSearched = true;
-    searchResultArea.style.display = "block"; // 結果エリアを表示
+    searchResultArea.style.display = "block";
     
-    // ボタンのフィードバックアニメーション
+    // ボタンアニメーション
+    const originalText = btnSearch.textContent;
     btnSearch.textContent = "検索しました！ ✔";
     btnSearch.style.backgroundColor = "#2563eb";
     setTimeout(() => { 
-      btnSearch.textContent = "対象店舗を表示する 🔍"; 
+      btnSearch.textContent = originalText; 
       btnSearch.style.backgroundColor = ""; 
     }, 1500);
 
     executeSearch();
   });
 
-  // 見積もりトグルスイッチの連動
   toggleEstimate.addEventListener("change", () => {
     if (toggleEstimate.checked) {
       priceSection.classList.add("show");
-      if (hasSearched) executeSearch(); // 表示と同時に最新情報に更新
+      if (hasSearched) executeSearch(); 
     } else {
       priceSection.classList.remove("show");
     }
   });
 
-  // タブ切り替え（リスト・地図など）
   tabCity.addEventListener("click", () => { currentTab = "city"; tabCity.classList.add("active"); tabPref.classList.remove("active"); if(hasSearched) executeSearch(); });
   tabPref.addEventListener("click", () => { currentTab = "pref"; tabPref.classList.add("active"); tabCity.classList.remove("active"); if(hasSearched) executeSearch(); });
   
@@ -305,14 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
     isMapInitialized = true;
   }
 
-  // ★ 検索のコア処理（ボタン押下時にのみ実行される）
   function executeSearch() {
     const selectedArea = areaSelect.value;
     const selectedPrefecture = prefectureSelect.value;
     const checkedBoxes = document.querySelectorAll('.city-checkbox:checked');
     const selectedCities = Array.from(checkedBoxes).map(cb => cb.value);
 
-    // 見積もりエリア内のタブ制御
     if (selectedPrefecture && toggleEstimate.checked) {
       tabContainer.style.display = "flex";
       tabPref.textContent = `${selectedPrefecture}全体`;

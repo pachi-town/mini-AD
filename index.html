@@ -31,33 +31,47 @@
 
   <div class="main-container">
     
-    <!-- 配信スケジュールタイムライン -->
+    <!-- 配信スケジュールタイムライン（SP時アコーディオン化） -->
     <div class="schedule-panel card">
-      <h3><span style="color: #dc2626;">本日時点での配信開始までの最短スケジュール</span> <span class="small-text" style="color: #333;">（起算日：<span id="todayDate"></span>）</span></h3>
-      <div class="timeline">
-        <div class="step">
-          <div class="step-date" id="scheduleInquiry"></div>
-          <div class="step-title">空き確認・問い合わせ</div>
-          <div class="step-desc">配信開始希望日の<br>5週間前が目安</div>
+      <div class="schedule-header" id="scheduleAccordionToggle">
+        <div class="schedule-header-text">
+          <h3 class="schedule-title">
+            <span class="title-main">本日時点での最短スケジュール</span>
+            <span class="title-sub">（本日：<span id="todayDate"></span>）</span>
+          </h3>
+          <div class="sp-only schedule-sp-summary">
+            最短配信開始日：<span id="spReleaseDate" class="highlight-date"></span> 以降
+          </div>
         </div>
-        <div class="step">
-          <div class="step-date" id="scheduleApply"></div>
-          <div class="step-title">お申し込み</div>
-          <div class="step-desc">配信開始希望日の<br>4週間前が目安</div>
-        </div>
-        <div class="step">
-          <div class="step-date" id="scheduleMaterial"></div>
-          <div class="step-title">素材入稿期日</div>
-          <div class="step-desc">配信開始希望日の<br>3週間前</div>
-        </div>
-        <div class="step highlight">
-          <div class="step-date" id="scheduleRelease"></div>
-          <div class="step-title">最短の配信開始日</div>
-          <div class="step-desc" style="color: #dc2626; font-weight: bold;">上記の日付以降で<br>スケジュール調整をお願いします</div>
-        </div>
+        <span class="acc-icon sp-only" id="scheduleAccIcon">▼</span>
       </div>
-      <div class="schedule-note">
-        ※ご希望の期間に空き枠がない場合もございます。まずは空き状況をお問い合わせください。
+      
+      <div class="schedule-content" id="scheduleAccordionContent">
+        <div class="timeline">
+          <div class="step">
+            <div class="step-date" id="scheduleInquiry"></div>
+            <div class="step-title">空き確認・問い合わせ</div>
+            <div class="step-desc">配信開始希望日の<br>5週間前が目安</div>
+          </div>
+          <div class="step">
+            <div class="step-date" id="scheduleApply"></div>
+            <div class="step-title">お申し込み</div>
+            <div class="step-desc">配信開始希望日の<br>4週間前が目安</div>
+          </div>
+          <div class="step">
+            <div class="step-date" id="scheduleMaterial"></div>
+            <div class="step-title">素材入稿期日</div>
+            <div class="step-desc">配信開始希望日の<br>3週間前</div>
+          </div>
+          <div class="step highlight">
+            <div class="step-date" id="scheduleRelease"></div>
+            <div class="step-title">最短の配信開始日</div>
+            <div class="step-desc" style="color: #dc2626; font-weight: bold;">上記の日付以降で<br>スケジュール調整をお願いします</div>
+          </div>
+        </div>
+        <div class="schedule-note">
+          ※ご希望の期間に空き枠がない場合もございます。まずは空き状況をお問い合わせください。
+        </div>
       </div>
     </div>
 
@@ -81,29 +95,39 @@
       </button>
     </div>
 
-    <!-- ★改修：商材説明のアコーディオン（開閉式） -->
-    <div class="accordion-section card">
-      <button class="accordion-header" id="descAccordionToggle">
-        <span>商材の表示イメージ・仕様</span>
-        <span class="accordion-icon" id="descAccIcon">▼</span>
-      </button>
-      <div class="accordion-content" id="descAccordionContent">
-        <!-- プラン連動：説明文ゾーン -->
-        <div id="descriptionZone" class="description-zone" style="margin-top: 20px;">
-          <div class="desc-card multi">
-            <h3>マルチディスプレイ</h3>
-            <p id="descMultiText">※データを読み込んでいます...</p>
-          </div>
-          <div class="desc-card single">
-            <h3>1面ディスプレイ</h3>
-            <p id="descSingleText">※データを読み込んでいます...</p>
-          </div>
-          <div class="desc-card pos">
-            <h3>POSレジ</h3>
-            <p id="descPosText">※データを読み込んでいます...</p>
-          </div>
+    <!-- 商材説明ゾーン（各カード独立アコーディオン） -->
+    <div id="descriptionZone" class="description-zone">
+      
+      <div class="desc-card multi">
+        <div class="desc-header">
+          <h3>マルチディスプレイ</h3>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descMultiText">※データを読み込んでいます...</p>
         </div>
       </div>
+
+      <div class="desc-card single">
+        <div class="desc-header">
+          <h3>1面ディスプレイ</h3>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descSingleText">※データを読み込んでいます...</p>
+        </div>
+      </div>
+
+      <div class="desc-card pos">
+        <div class="desc-header">
+          <h3>POSレジ</h3>
+          <span class="acc-icon sp-only">▼</span>
+        </div>
+        <div class="desc-body">
+          <p id="descPosText">※データを読み込んでいます...</p>
+        </div>
+      </div>
+
     </div>
 
     <!-- 検索コントロールエリア -->
@@ -121,9 +145,9 @@
         </div>
       </div>
       
-      <!-- ★改修：ボタンとトグルスイッチの配置 -->
+      <!-- ボタンとトグルスイッチ -->
       <div class="action-section">
-        <button id="btnSearch" class="btn btn-primary btn-large">対象店舗を表示する 🔍</button>
+        <button id="btnSearch" class="btn btn-primary btn-large">対象店舗を表示</button>
         <div class="toggle-wrapper">
           <span class="toggle-label">概算見積もりを表示</span>
           <label class="switch">
@@ -134,7 +158,7 @@
       </div>
     </div>
 
-    <!-- ★改修：見積もりエリア（トグル連動でフワッと表示） -->
+    <!-- 見積もりエリア（トグル連動で表示） -->
     <div id="priceSection" class="price-section-hidden">
       <div class="card">
         <h2>価格情報 <span class="note small-text">（価格は1週間料金となります／税別）</span></h2>
