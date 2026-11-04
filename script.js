@@ -182,11 +182,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      allStoresRaw.forEach(store => availablePrefectures.add(store.都道府県));
+      // ★改修：見えない空白（スペース）の除去と、東京都・大阪府・京都府の漏れを修正
+      allStoresRaw.forEach(store => {
+          store.都道府県 = store.都道府県 ? String(store.都道府県).trim() : "";
+          store.市区町村 = store.市区町村 ? String(store.市区町村).trim() : "";
+          if (store.都道府県) availablePrefectures.add(store.都道府県);
+      });
       Object.keys(allPrices).forEach(region => {
-          if (region.endsWith('県') || region === '北海道') availablePrefectures.add(region);
+          const r = region.trim();
+          if (r.endsWith('都') || r.endsWith('道') || r.endsWith('府') || r.endsWith('県')) {
+              availablePrefectures.add(r);
+          }
       });
       availablePrefectures.delete('NaN');
+      availablePrefectures.delete('');
 
       structureStores(allStoresRaw); 
       populateAreaSelect(); 
@@ -207,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     stores.forEach(store => {
       const pref = store.都道府県;
       const city = store.市区町村;
+      if (!pref || !city) return;
       if (!allStoresStructured[pref]) allStoresStructured[pref] = {};
       if (!allStoresStructured[pref][city]) allStoresStructured[pref][city] = [];
       allStoresStructured[pref][city].push(store);
@@ -225,10 +235,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ★改修：都道府県を北から南の順番で正しく表示（あいうえお順のバラバラを解消）
   function populatePrefectureSelect(selectedArea) {
     prefectureSelect.innerHTML = '<option value="">都道府県</option>';
-    let targetPrefectures = selectedArea ? areas[selectedArea].filter(pref => availablePrefectures.has(pref)) : Array.from(availablePrefectures);
-    targetPrefectures.sort().forEach(pref => {
+    let targetPrefectures = [];
+    
+    if (selectedArea && areas[selectedArea]) {
+      targetPrefectures = areas[selectedArea].filter(pref => availablePrefectures.has(pref));
+    } else {
+      // エリア未選択時は全エリアを順番に走査して追加
+      Object.keys(areas).forEach(area => {
+        targetPrefectures = targetPrefectures.concat(areas[area].filter(pref => availablePrefectures.has(pref)));
+      });
+    }
+    
+    targetPrefectures.forEach(pref => {
       const option = document.createElement("option");
       option.value = pref;
       option.textContent = pref;
