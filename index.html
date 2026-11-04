@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <!-- ★改修：キャッシュ強制クリアのためのパラメータ（?v=2）を付与 -->
-  <link rel="stylesheet" href="style.css?v=2">
-  <script src="script.js?v=2" defer></script>
+  <!-- ★改修：キャッシュ強制クリアのためのパラメータ（?v=3）を付与 -->
+  <link rel="stylesheet" href="style.css?v=3">
+  <script src="script.js?v=3" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
 <body data-plan="basic">
@@ -87,7 +87,8 @@
         <span class="plan-name pc-only">マルチ限定プラン</span>
         <span class="plan-name sp-only">マルチ限定</span>
         <span class="plan-sub">マルチのみ</span>
-        <span class="plan-note" style="display:block; font-size:0.75em; color:#dc2626; margin-top:6px; font-weight:bold;">※市区町村絞り込み可能</span>
+        <!-- ★改修：インラインスタイルを削除し、CSSで完璧に制御 -->
+        <span class="plan-note">※市区町村絞り込み可能</span>
       </button>
       <button class="plan-btn" data-plan="pos">
         <span class="plan-name pc-only">POSレジプラン</span>
