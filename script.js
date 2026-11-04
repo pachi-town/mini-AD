@@ -4,9 +4,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const areaSelect = document.getElementById("areaSelect");
   const prefectureSelect = document.getElementById("prefectureSelect");
   const btnSearch = document.getElementById("btnSearch");
-  const btnEstimate = document.getElementById("btnEstimate");
-  const loadingOverlay = document.getElementById("loadingOverlay");
+  const toggleEstimate = document.getElementById("toggleEstimate");
+  const priceSection = document.getElementById("priceSection");
+  const searchResultArea = document.getElementById("searchResultArea");
   
+  const loadingOverlay = document.getElementById("loadingOverlay");
   const tabContainer = document.getElementById("tabContainer");
   const tabCity = document.getElementById("tabCity");
   const tabPref = document.getElementById("tabPref");
@@ -24,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let volumePrices = [];
   let availablePrefectures = new Set();
   
-  let currentMode = "search"; 
   let currentTab = "city";
   let currentPlan = "basic"; 
+  let hasSearched = false;
 
   let map;
   let markersLayer;
@@ -45,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
   };
 
+  // 1. スケジュール描画
   function renderSchedule() {
     const today = new Date();
     const releaseDate = new Date(today);
@@ -53,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     applyDate.setDate(releaseDate.getDate() - 28); 
     const materialDate = new Date(releaseDate);
     materialDate.setDate(releaseDate.getDate() - 21); 
-
     const formatDate = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
 
     document.getElementById('todayDate').textContent = formatDate(today);
@@ -62,21 +64,38 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('scheduleMaterial').textContent = formatDate(materialDate);
     document.getElementById('scheduleRelease').textContent = formatDate(releaseDate);
   }
-  
   renderSchedule();
 
+  // 2. アコーディオンの制御（PCは開く、SPは閉じる）
+  const accToggle = document.getElementById("descAccordionToggle");
+  const accContent = document.getElementById("descAccordionContent");
+  const accIcon = document.getElementById("descAccIcon");
+  
+  if (window.innerWidth <= 768) {
+    accContent.classList.add("is-closed");
+    accIcon.textContent = "▶︎";
+  }
+  
+  accToggle.addEventListener("click", () => {
+    if (accContent.classList.contains("is-closed")) {
+      accContent.classList.remove("is-closed");
+      accIcon.textContent = "▼";
+    } else {
+      accContent.classList.add("is-closed");
+      accIcon.textContent = "▶︎";
+    }
+  });
+
+  // 3. 市区町村チェックボックスのロック制御
   function updateCityCheckboxesState() {
     const container = document.getElementById("cityCheckboxes");
     if (!container) return;
-    
     const overlayMsgId = "cityDisabledMsg";
     let msgEl = document.getElementById(overlayMsgId);
 
     if (currentPlan !== "multi") {
       container.style.opacity = "0.4";
       container.style.pointerEvents = "none";
-      container.style.transition = "opacity 0.3s ease";
-      
       const checkboxes = document.querySelectorAll('.city-checkbox:checked');
       checkboxes.forEach(cb => cb.checked = false);
 
@@ -99,17 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ★追加：ボタンのアクティブ状態を切り替える関数
-  function updateModeButtons() {
-    if (currentMode === "search") {
-      btnSearch.classList.add("active-mode");
-      btnEstimate.classList.remove("active-mode");
-    } else {
-      btnEstimate.classList.add("active-mode");
-      btnSearch.classList.remove("active-mode");
-    }
-  }
-
+  // 4. プラン切り替え
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -119,10 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
       
       document.body.setAttribute('data-plan', currentPlan);
       updateCityCheckboxesState();
-      updateView();
+      
+      // すでに検索済みなら結果も連動して更新
+      if (hasSearched) executeSearch(); 
     });
   });
 
+  // 5. データ取得とセレクトボックス生成
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
@@ -176,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
       populateAreaSelect(); 
       populatePrefectureSelect(""); 
       updateCityCheckboxesState(); 
-      
       loadingOverlay.style.display = "none";
     })
     .catch(err => {
@@ -184,31 +195,9 @@ document.addEventListener("DOMContentLoaded", () => {
       loadingOverlay.innerHTML = "<p style='color: red; font-weight: bold;'>データの読み込みに失敗しました。</p>";
     });
 
-  function initMap() {
-    if (isMapInitialized) return;
-    map = L.map('map').setView([35.681236, 139.767125], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    markersLayer = L.layerGroup().addTo(map);
-    isMapInitialized = true;
-  }
-
-  btnListView.addEventListener("click", () => {
-    btnListView.classList.add("active");
-    btnMapView.classList.remove("active");
-    listContainer.style.display = "block";
-    mapContainer.style.display = "none";
-  });
-
-  btnMapView.addEventListener("click", () => {
-    btnMapView.classList.add("active");
-    btnListView.classList.remove("active");
-    listContainer.style.display = "none";
-    mapContainer.style.display = "block";
-    if (!isMapInitialized) initMap();
-    setTimeout(() => { map.invalidateSize(); updateMapMarkers(); }, 100);
-  });
+  // セレクトボックスの連動（ここでは自動検索は走らせない）
+  areaSelect.addEventListener("change", () => populatePrefectureSelect(areaSelect.value));
+  prefectureSelect.addEventListener("change", () => populateCitySelect(prefectureSelect.value));
 
   function structureStores(stores) {
     allStoresStructured = {};
@@ -255,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         checkbox.type = "checkbox";
         checkbox.value = city;
         checkbox.className = "city-checkbox";
-        checkbox.addEventListener("change", updateView);
         label.appendChild(checkbox);
         label.appendChild(document.createTextNode(city));
         container.appendChild(label);
@@ -266,23 +254,66 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCityCheckboxesState(); 
   }
 
-  areaSelect.addEventListener("change", () => { populatePrefectureSelect(areaSelect.value); updateView(); });
-  prefectureSelect.addEventListener("change", () => { populateCitySelect(prefectureSelect.value); updateView(); });
-  
-  // ★改修：ボタンクリック時にアクティブ状態のUIも更新
-  btnSearch.addEventListener("click", () => { currentMode = "search"; updateModeButtons(); updateView(); });
-  btnEstimate.addEventListener("click", () => { currentMode = "estimate"; updateModeButtons(); updateView(); });
-  
-  tabCity.addEventListener("click", () => { currentTab = "city"; tabCity.classList.add("active"); tabPref.classList.remove("active"); updateView(); });
-  tabPref.addEventListener("click", () => { currentTab = "pref"; tabPref.classList.add("active"); tabCity.classList.remove("active"); updateView(); });
+  // 6. 検索・見積もりの実行アクション
+  btnSearch.addEventListener("click", () => {
+    hasSearched = true;
+    searchResultArea.style.display = "block"; // 結果エリアを表示
+    
+    // ボタンのフィードバックアニメーション
+    btnSearch.textContent = "検索しました！ ✔";
+    btnSearch.style.backgroundColor = "#2563eb";
+    setTimeout(() => { 
+      btnSearch.textContent = "対象店舗を表示する 🔍"; 
+      btnSearch.style.backgroundColor = ""; 
+    }, 1500);
 
-  function updateView() {
+    executeSearch();
+  });
+
+  // 見積もりトグルスイッチの連動
+  toggleEstimate.addEventListener("change", () => {
+    if (toggleEstimate.checked) {
+      priceSection.classList.add("show");
+      if (hasSearched) executeSearch(); // 表示と同時に最新情報に更新
+    } else {
+      priceSection.classList.remove("show");
+    }
+  });
+
+  // タブ切り替え（リスト・地図など）
+  tabCity.addEventListener("click", () => { currentTab = "city"; tabCity.classList.add("active"); tabPref.classList.remove("active"); if(hasSearched) executeSearch(); });
+  tabPref.addEventListener("click", () => { currentTab = "pref"; tabPref.classList.add("active"); tabCity.classList.remove("active"); if(hasSearched) executeSearch(); });
+  
+  btnListView.addEventListener("click", () => {
+    btnListView.classList.add("active"); btnMapView.classList.remove("active");
+    listContainer.style.display = "block"; mapContainer.style.display = "none";
+  });
+  btnMapView.addEventListener("click", () => {
+    btnMapView.classList.add("active"); btnListView.classList.remove("active");
+    listContainer.style.display = "none"; mapContainer.style.display = "block";
+    if (!isMapInitialized) initMap();
+    setTimeout(() => { map.invalidateSize(); updateMapMarkers(); }, 100);
+  });
+
+  function initMap() {
+    if (isMapInitialized) return;
+    map = L.map('map').setView([35.681236, 139.767125], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    markersLayer = L.layerGroup().addTo(map);
+    isMapInitialized = true;
+  }
+
+  // ★ 検索のコア処理（ボタン押下時にのみ実行される）
+  function executeSearch() {
     const selectedArea = areaSelect.value;
     const selectedPrefecture = prefectureSelect.value;
     const checkedBoxes = document.querySelectorAll('.city-checkbox:checked');
     const selectedCities = Array.from(checkedBoxes).map(cb => cb.value);
 
-    if (currentMode === "estimate" && selectedPrefecture) {
+    // 見積もりエリア内のタブ制御
+    if (selectedPrefecture && toggleEstimate.checked) {
       tabContainer.style.display = "flex";
       tabPref.textContent = `${selectedPrefecture}全体`;
     } else {
@@ -323,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     currentMultiStores = filteredStores.filter(store => String(store.サイネージ) === "新");
-    
     if (currentPlan === "multi") {
       currentSingleStores = [];
     } else {
@@ -332,11 +362,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateStoreSummary(currentMultiStores.length, currentSingleStores.length);
     renderTables(currentMultiStores, currentSingleStores);
-    
     if (mapContainer.style.display === "block") updateMapMarkers();
 
-    if (currentMode === "estimate") {
-      document.getElementById('priceSection').style.display = 'block';
+    if (toggleEstimate.checked) {
       updatePriceTable(selectedArea, selectedPrefecture);
       if (selectedCities.length > 0 && currentTab === "city") {
         document.getElementById('calcResultBox').style.display = 'flex';
@@ -344,10 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         document.getElementById('calcResultBox').style.display = 'none';
       }
-    } else {
-      document.getElementById('priceSection').style.display = 'none';
     }
-    document.getElementById('resultSection').style.display = 'block';
   }
 
   function renderTables(multiStores, singleStores) {
@@ -409,7 +434,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="widget-value"><span class="count">${totalCount}</span><span class="unit">店舗</span></div>
       </div>
     `;
-    document.getElementById("storeSummary").style.display = "grid";
   }
 
   function updatePriceTable(selectedArea, selectedPrefecture) {
