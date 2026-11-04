@@ -47,14 +47,30 @@ h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 /* =========================================
    Plan Selector Tabs
    ========================================= */
-/* ★改修：プランタブの横幅がPCでバラバラになるのを防ぐため flex: 1 を強制 */
-.plan-selector { display: flex; gap: 10px; margin-bottom: 25px; }
-.plan-btn { flex: 1; min-width: 0; background: #fff; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px 10px; cursor: pointer; transition: all 0.2s; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+/* プランタブのPC基本スタイル */
+.plan-selector { display: flex; gap: 10px; margin-bottom: 25px; align-items: stretch; }
+.plan-btn { 
+  flex: 1 1 0%; 
+  width: 33.333%; 
+  background: #fff; 
+  border: 2px solid #e5e7eb; 
+  border-radius: 12px; 
+  padding: 16px 5px; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  text-align: center; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 .plan-btn:hover { border-color: #9ca3af; transform: translateY(-2px); }
 .plan-btn.active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 4px 10px rgba(59,130,246,0.15); }
-.plan-name { display: block; font-size: 1.1em; font-weight: bold; color: #1f2937; margin-bottom: 4px; }
+.plan-name { display: block; font-size: 1.1em; font-weight: bold; color: #1f2937; margin-bottom: 4px; width: 100%; }
 .plan-btn.active .plan-name { color: #1d4ed8; }
-.plan-sub { display: block; font-size: 0.85em; color: #6b7280; }
+.plan-sub { display: block; font-size: 0.85em; color: #6b7280; width: 100%; }
+.plan-note { display: block; font-size: 0.75em; color: #dc2626; margin-top: 6px; font-weight: bold; width: 100%; }
 
 .pc-only { display: block; }
 span.pc-only { display: inline; }
@@ -87,7 +103,7 @@ span.pc-only { display: inline; }
 .store-badge .badge-num { font-size: 1.3em; font-weight: bold; line-height: 1; }
 .store-badge .badge-unit { font-size: 0.75em; color: #64748b; font-weight: normal; }
 
-/* ★改修：対象外テキスト時のグレー化 */
+/* 対象外テキスト時のグレー化 */
 .multi-badge .badge-num { color: #0ea5e9; }
 .single-badge .badge-num { color: #64748b; }
 .pos-badge .badge-num { color: #10b981; }
@@ -227,10 +243,21 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
   .acc-icon.is-open { transform: rotate(180deg); }
   .desc-card p img { height: auto !important; max-height: 200px !important; }
   
-  .plan-selector { flex-direction: row; gap: 6px; }
-  .plan-btn { padding: 10px 4px; }
-  .plan-name { font-size: 0.95rem; margin-bottom: 2px;}
-  .plan-sub { font-size: 0.7rem; }
+  /* ★改修：プランタブのスマホ横並び（完全に等幅・等高にし改行を防ぐ） */
+  .plan-selector { flex-direction: row; gap: 4px; }
+  .plan-btn { 
+    flex: 1 1 0%; 
+    width: 33.333%; 
+    padding: 8px 2px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .plan-name { font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; letter-spacing: -0.5px;}
+  .plan-sub { font-size: 0.65rem; white-space: nowrap; }
+  .plan-note { font-size: 0.6rem !important; margin-top: 2px !important; line-height: 1.1; width: 100%; display: inline-block; }
   
   .controls, .filter-section { flex-direction: column; gap: 16px; }
   .select-group, .city-select-group { width: 100%; min-width: 100%; }
