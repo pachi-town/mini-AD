@@ -36,18 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentMultiStores = [];
   let currentSingleStores = [];
 
+  // ★改修：「エリア」から「地方」へ表記変更
   const areas = {
-    "北海道": ["北海道"], 
-    "東北": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
-    "関東": ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "山梨県"],
-    "東海": ["新潟県", "富山県", "石川県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"],
-    "近畿": ["滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "福井県"],
-    "中国": ["鳥取県", "島根県", "岡山県", "広島県", "山口県"],
-    "四国": ["徳島県", "香川県", "愛媛県", "高知県"],
-    "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
+    "北海道地方": ["北海道"], 
+    "東北地方": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
+    "関東地方": ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "山梨県"],
+    "東海地方": ["新潟県", "富山県", "石川県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"],
+    "近畿地方": ["滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "福井県"],
+    "中国地方": ["鳥取県", "島根県", "岡山県", "広島県", "山口県"],
+    "四国地方": ["徳島県", "香川県", "愛媛県", "高知県"],
+    "九州・沖縄地方": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"]
   };
 
-  // スケジュール描画
   function renderSchedule() {
     const today = new Date();
     const releaseDate = new Date(today);
@@ -69,7 +69,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   renderSchedule();
 
-  // SP用：スケジュールのアコーディオン制御
   document.getElementById('scheduleAccordionToggle').addEventListener('click', () => {
     if (window.innerWidth <= 768) {
       const body = document.getElementById('scheduleAccordionContent');
@@ -79,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // SP用：商材説明のアコーディオン制御
   document.querySelectorAll('.desc-header').forEach(header => {
     header.addEventListener('click', () => {
       if (window.innerWidth <= 768) {
@@ -91,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 市区町村チェックボックスのロック制御
   function updateCityCheckboxesState() {
     const container = document.getElementById("cityCheckboxes");
     if (!container) return;
@@ -123,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // プラン切り替え
   document.querySelectorAll('.plan-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
@@ -138,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // データ取得とセレクトボックス生成
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
@@ -182,7 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // ★改修：見えない空白（スペース）の除去と、東京都・大阪府・京都府の漏れを修正
       allStoresRaw.forEach(store => {
           store.都道府県 = store.都道府県 ? String(store.都道府県).trim() : "";
           store.市区町村 = store.市区町村 ? String(store.市区町村).trim() : "";
@@ -201,6 +195,8 @@ document.addEventListener("DOMContentLoaded", () => {
       populateAreaSelect(); 
       populatePrefectureSelect(""); 
       updateCityCheckboxesState(); 
+      
+      // データロード完了時にローディング画面を非表示
       loadingOverlay.style.display = "none";
     })
     .catch(err => {
@@ -224,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function populateAreaSelect() {
-    areaSelect.innerHTML = '<option value="">エリア選択</option>';
+    areaSelect.innerHTML = '<option value="">地方選択</option>';
     Object.keys(areas).forEach(area => {
         if (areas[area].filter(pref => availablePrefectures.has(pref)).length > 0) {
             const option = document.createElement("option");
@@ -235,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ★改修：都道府県を北から南の順番で正しく表示（あいうえお順のバラバラを解消）
   function populatePrefectureSelect(selectedArea) {
     prefectureSelect.innerHTML = '<option value="">都道府県</option>';
     let targetPrefectures = [];
@@ -243,7 +238,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (selectedArea && areas[selectedArea]) {
       targetPrefectures = areas[selectedArea].filter(pref => availablePrefectures.has(pref));
     } else {
-      // エリア未選択時は全エリアを順番に走査して追加
       Object.keys(areas).forEach(area => {
         targetPrefectures = targetPrefectures.concat(areas[area].filter(pref => availablePrefectures.has(pref)));
       });
@@ -278,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCityCheckboxesState(); 
   }
 
-  // 検索ボタンと見積もりスイッチの実行アクション
   btnSearch.addEventListener("click", () => {
     hasSearched = true;
     searchResultArea.style.display = "block";

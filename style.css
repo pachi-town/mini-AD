@@ -21,6 +21,22 @@ h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 .main-container { max-width: 1100px; margin: 0 auto; }
 
 /* =========================================
+   ★改修：Loading Overlay (復活)
+   ========================================= */
+.loading-overlay { 
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(255, 255, 255, 0.9); 
+  display: flex; flex-direction: column; justify-content: center; align-items: center; 
+  z-index: 9999; transition: opacity 0.3s ease; 
+}
+.spinner { 
+  border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; 
+  border-radius: 50%; width: 40px; height: 40px; 
+  animation: spin 1s linear infinite; margin-bottom: 12px; 
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* =========================================
    Schedule Timeline (SP時はアコーディオン)
    ========================================= */
 .schedule-panel { margin-bottom: 30px; }
@@ -114,14 +130,13 @@ body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%)
 /* PC時は横一列の美しいレイアウト */
 .controls { display: flex; flex-direction: row; gap: 24px; align-items: stretch; }
 .filter-section { display: flex; flex-direction: row; gap: 20px; flex: 1; min-width: 0; }
-
 .select-group { display: flex; flex-direction: column; justify-content: space-between; width: 220px; flex-shrink: 0; gap: 12px; }
 .city-select-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0; }
 .action-section { display: flex; flex-direction: column; gap: 16px; width: 260px; flex-shrink: 0; justify-content: space-between; }
 
 select { padding: 0 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f9fafb; cursor: pointer; color: #374151; width: 100%; height: 46px; }
 
-/* ★改修：PC用チェックボックス枠（絶対に潰れない安全なFlex wrapレイアウト） */
+/* PC用チェックボックス枠（絶対に潰れない安全なFlex wrapレイアウト） */
 .checkbox-list { 
   border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: #f9fafb; 
   max-height: 120px; overflow-y: auto; 

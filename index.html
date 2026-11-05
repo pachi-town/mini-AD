@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <!-- ★改修：キャッシュ強制クリアのためのパラメータ（?v=8）を付与 -->
-  <link rel="stylesheet" href="style.css?v=8">
-  <script src="script.js?v=8" defer></script>
+  <!-- ★改修：キャッシュ強制クリアのためのパラメータ（?v=9）を付与 -->
+  <link rel="stylesheet" href="style.css?v=9">
+  <script src="script.js?v=9" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
 <body data-plan="basic">
@@ -100,7 +100,8 @@
     <div class="controls card">
       <div class="filter-section">
         <div class="select-group">
-          <select id="areaSelect"><option value="">エリア選択</option></select>
+          <!-- ★改修：「エリア」から「地方」へ表記変更 -->
+          <select id="areaSelect"><option value="">地方選択</option></select>
           <select id="prefectureSelect"><option value="">都道府県</option></select>
         </div>
         <div class="city-select-group">
