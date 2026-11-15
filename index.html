@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <link rel="stylesheet" href="style.css?v=11">
-  <script src="script.js?v=11" defer></script>
+  <link rel="stylesheet" href="style.css?v=12">
+  <script src="script.js?v=12" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
 <body data-plan="basic">
@@ -34,14 +34,17 @@
   <div id="menu-overlay" onclick="toggleMenu()"></div>
   <div id="dropdown-menu" class="dropdown-menu"></div>
   
-  <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
-    <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
-      <img id="headerBannerImage" src="" alt="ヘッダーバナー">
-    </a>
-  </div>
 
+  <!-- ★修正：バナーを main-container の中に移動（下の枠と幅を揃えるため） -->
   <div class="main-container">
     
+    <!-- ヘッダーバナー -->
+    <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
+      <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
+        <img id="headerBannerImage" src="" alt="ヘッダーバナー">
+      </a>
+    </div>
+
     <!-- 配信スケジュールタイムライン -->
     <div class="schedule-panel card">
       <div class="schedule-header" id="scheduleAccordionToggle">

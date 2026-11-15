@@ -148,15 +148,15 @@ document.addEventListener("DOMContentLoaded", () => {
     .then(res => res.json())
     .then(data => {
       // ▼スプレッドシートから読み込んだ「商材リンク」を動的生成
-      const merchandiseData = data["商材リンク"] || data.merchandiseLinks || [];
+      const merchandiseData = data["商材リンク"] || [];
       const menu = document.getElementById('dropdown-menu');
       if (menu) {
         menu.innerHTML = '';
         if (merchandiseData.length > 0) {
           merchandiseData.forEach(site => {
-            const imgUrl = site["画像URL"] || site.imageUrl || "";
-            const linkUrl = site["リンク先URL"] || site.linkUrl || "";
-            const siteName = site["リンク名称"] || site.name || "名称未設定";
+            const imgUrl = site["画像URL"] || "";
+            const linkUrl = site["リンク先URL"] || "";
+            const siteName = site["リンク名称"] || "名称未設定";
 
             if (!linkUrl || linkUrl.trim() === "") return;
 
@@ -179,7 +179,10 @@ document.addEventListener("DOMContentLoaded", () => {
             a.appendChild(span);
             menu.appendChild(a);
           });
-        } else {
+        }
+        
+        // 生成した結果、中身が空だった場合のフォールバック
+        if(menu.innerHTML === '') {
           menu.innerHTML = '<div style="padding: 14px 16px; color: #6b7280; font-size: 14px;">リンクがありません</div>';
         }
       }
@@ -361,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isMapInitialized) return;
     map = L.map('map').setView([35.681236, 139.767125], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
     isMapInitialized = true;

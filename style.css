@@ -8,13 +8,13 @@ body {
   background: #f3f6f9;
   color: #333;
   padding: 0; 
-  margin: 0; /* ブラウザ標準の余白を消去しヘッダーを全幅に */
+  margin: 0; 
   line-height: 1.6;
   font-size: 15px;
 }
 
 /* ヘッダー以外のコンテンツにパディングを適用 */
-.main-container, .header-banner-container, .ad-banner-container {
+.main-container {
   padding: 20px;
 }
 
@@ -174,7 +174,7 @@ body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%)
 /* =========================================
    Banners
    ========================================= */
-.header-banner-container, .ad-banner-container { max-width: 1100px; margin: 0 auto 25px auto; text-align: center; transition: transform 0.2s ease; }
+.header-banner-container, .ad-banner-container { text-align: center; transition: transform 0.2s ease; margin-bottom: 25px; }
 .ad-banner-container:hover { transform: translateY(-2px); }
 .header-banner-container img, .ad-banner-container img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: block; margin: 0 auto; }
 .ad-banner-container img { transition: opacity 0.4s ease-in-out; opacity: 1; }
