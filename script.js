@@ -10,7 +10,8 @@ window.toggleMenu = function() {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
+  // ★ 修正：提供された最新のGAS URLに変更
+  const gasUrl = "https://script.google.com/macros/s/AKfycbyWJQqTXWSGKoi9xRKWYcXfNoMFuOs3o_FpkGO20mTQAWF4r2Y5IgQknak0TxYJN8bv/exec";
 
   const areaSelect = document.getElementById("areaSelect");
   const prefectureSelect = document.getElementById("prefectureSelect");

@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <link rel="stylesheet" href="style.css?v=12">
-  <script src="script.js?v=12" defer></script>
+  <link rel="stylesheet" href="style.css?v=13">
+  <script src="script.js?v=13" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
 <body data-plan="basic">
@@ -34,11 +34,10 @@
   <div id="menu-overlay" onclick="toggleMenu()"></div>
   <div id="dropdown-menu" class="dropdown-menu"></div>
   
-
-  <!-- ★修正：バナーを main-container の中に移動（下の枠と幅を揃えるため） -->
+  <!-- ★ コンテンツ全体を包むコンテナ（最大幅1100px） -->
   <div class="main-container">
     
-    <!-- ヘッダーバナー -->
+    <!-- ★ ヘッダーバナーを main-container の直下に配置（幅を揃えるため） -->
     <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
       <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
         <img id="headerBannerImage" src="" alt="ヘッダーバナー">

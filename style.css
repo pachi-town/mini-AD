@@ -16,6 +16,8 @@ body {
 /* ヘッダー以外のコンテンツにパディングを適用 */
 .main-container {
   padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 /* =========================================
@@ -75,7 +77,6 @@ body {
 h2 { font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; color: #1f2937; }
 h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 .small-text { font-size: 0.85em; color: #6b7280; }
-.main-container { max-width: 1100px; margin: 0 auto; }
 
 /* =========================================
    Loading Overlay
@@ -172,11 +173,23 @@ body[data-plan="pos"] .desc-card.multi,
 body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%); transform: scale(0.98); pointer-events: none; }
 
 /* =========================================
-   Banners
+   ★修正：Banners
    ========================================= */
-.header-banner-container, .ad-banner-container { text-align: center; transition: transform 0.2s ease; margin-bottom: 25px; }
+.header-banner-container, .ad-banner-container { 
+  max-width: 1100px; /* main-containerと同じ幅に制限 */
+  margin: 0 auto 25px auto; 
+  text-align: center; 
+  transition: transform 0.2s ease; 
+}
 .ad-banner-container:hover { transform: translateY(-2px); }
-.header-banner-container img, .ad-banner-container img { width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: block; margin: 0 auto; }
+.header-banner-container img, .ad-banner-container img { 
+  width: 100%; 
+  height: auto; 
+  border-radius: 12px; 
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+  display: block; 
+  margin: 0 auto; 
+}
 .ad-banner-container img { transition: opacity 0.4s ease-in-out; opacity: 1; }
 
 /* =========================================
