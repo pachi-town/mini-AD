@@ -1,4 +1,56 @@
+// ★追加：ハンバーガーメニューの開閉制御
+window.toggleMenu = function() {
+    const menu = document.getElementById('dropdown-menu');
+    const overlay = document.getElementById('menu-overlay');
+    if(menu && overlay) {
+        const isShowing = menu.classList.contains('show');
+        menu.classList.toggle('show', !isShowing);
+        overlay.classList.toggle('show', !isShowing);
+    }
+};
+
+// ★追加：スプレッドシートの商材サイトタブからメニューデータを取得・生成
+function fetchMenuData() {
+    // Google Visualization API を使用して、指定されたGID（商材サイトタブ）のデータを取得します
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/16n9LwePvHujLpIgCd3VDIOoAcvO9SZ5yJawYxiXze98/gviz/tq?tqx=out:json&gid=364295746";
+    
+    fetch(sheetUrl)
+        .then(res => res.text())
+        .then(text => {
+            // jsonp形式のレスポンスから純粋なJSON部分を抽出
+            const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+            const data = JSON.parse(jsonText);
+            const menu = document.getElementById('dropdown-menu');
+            if (!menu || !data.table || !data.table.rows) return;
+            
+            let html = '';
+            data.table.rows.forEach(row => {
+                // A列:画像URL, B列:リンク先URL, C列:リンク名称
+                const imgUrl = (row.c[0] && row.c[0].v) ? row.c[0].v : '';
+                const linkUrl = (row.c[1] && row.c[1].v) ? row.c[1].v : '#';
+                const linkName = (row.c[2] && row.c[2].v) ? row.c[2].v : '';
+                
+                // 見出し行と空行をスキップ
+                if(linkName === 'リンク名称' || !linkName) return;
+
+                html += `
+                <a href="${linkUrl}" target="_blank" class="dropdown-item">
+                    ${imgUrl ? `<img src="${imgUrl}" class="dropdown-icon" alt="">` : '<div class="dropdown-icon"></div>'}
+                    <span>${linkName}</span>
+                </a>`;
+            });
+            menu.innerHTML = html;
+        })
+        .catch(err => {
+            console.error("メニューデータの読み込みに失敗しました:", err);
+            // 取得失敗時（公開設定等の理由）のフォールバック
+            document.getElementById('dropdown-menu').innerHTML = '<div style="padding:15px; font-size:13px; color:#666; font-weight:bold;">メニューを取得できませんでした。</div>';
+        });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  fetchMenuData(); // ★追加：初期ロード時にメニュー取得を実行
+
   const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
@@ -36,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentMultiStores = [];
   let currentSingleStores = [];
 
-  // ★改修：「エリア」から「地方」へ表記変更
   const areas = {
     "北海道地方": ["北海道"], 
     "東北地方": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
@@ -196,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
       populatePrefectureSelect(""); 
       updateCityCheckboxesState(); 
       
-      // データロード完了時にローディング画面を非表示
       loadingOverlay.style.display = "none";
     })
     .catch(err => {
@@ -314,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isMapInitialized) return;
     map = L.map('map').setView([35.681236, 139.767125], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
     isMapInitialized = true;
