@@ -9,41 +9,7 @@ window.toggleMenu = function() {
     }
 };
 
-// 【スプレッドシート連携用配列】
-// スプレッドシートの「商材サイト」タブの内容を以下の配列に書き換えてください。
-// A列：imageUrl、B列：linkUrl、C列：name に対応しています。
-const merchandiseSites = [
-    { imageUrl: "https://via.placeholder.com/24", linkUrl: "#", name: "ツール名称1" },
-    { imageUrl: "https://via.placeholder.com/24", linkUrl: "#", name: "ツール名称2" }
-];
-
-function renderDropdownMenu() {
-    const menu = document.getElementById('dropdown-menu');
-    if (!menu) return;
-    menu.innerHTML = '';
-    merchandiseSites.forEach(site => {
-        const a = document.createElement('a');
-        a.href = site.linkUrl;
-        a.target = "_blank";
-        a.className = "dropdown-item";
-        
-        const img = document.createElement('img');
-        img.src = site.imageUrl;
-        img.className = "dropdown-icon";
-        img.alt = "";
-        
-        const span = document.createElement('span');
-        span.textContent = site.name;
-        
-        a.appendChild(img);
-        a.appendChild(span);
-        menu.appendChild(a);
-    });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-  renderDropdownMenu(); // ヘッダーメニューの描画を実行
-
   const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
@@ -181,6 +147,44 @@ document.addEventListener("DOMContentLoaded", () => {
   fetch(gasUrl)
     .then(res => res.json())
     .then(data => {
+      // ▼スプレッドシートから読み込んだ「商材リンク」を動的生成
+      const merchandiseData = data["商材リンク"] || data.merchandiseLinks || [];
+      const menu = document.getElementById('dropdown-menu');
+      if (menu) {
+        menu.innerHTML = '';
+        if (merchandiseData.length > 0) {
+          merchandiseData.forEach(site => {
+            const imgUrl = site["画像URL"] || site.imageUrl || "";
+            const linkUrl = site["リンク先URL"] || site.linkUrl || "";
+            const siteName = site["リンク名称"] || site.name || "名称未設定";
+
+            if (!linkUrl || linkUrl.trim() === "") return;
+
+            const a = document.createElement('a');
+            a.href = linkUrl;
+            a.target = "_blank";
+            a.className = "dropdown-item";
+            
+            if (imgUrl) {
+              const img = document.createElement('img');
+              img.src = imgUrl;
+              img.className = "dropdown-icon";
+              img.alt = "";
+              a.appendChild(img);
+            }
+            
+            const span = document.createElement('span');
+            span.textContent = siteName;
+            
+            a.appendChild(span);
+            menu.appendChild(a);
+          });
+        } else {
+          menu.innerHTML = '<div style="padding: 14px 16px; color: #6b7280; font-size: 14px;">リンクがありません</div>';
+        }
+      }
+      // ▲ここまで追加
+
       const allStoresRaw = data.stores;
       allPrices = data.prices;
       volumePrices = data.volumePrices;
