@@ -1,4 +1,49 @@
+// ハンバーガーメニューの開閉制御
+window.toggleMenu = function() {
+    const menu = document.getElementById('dropdown-menu');
+    const overlay = document.getElementById('menu-overlay');
+    if(menu && overlay) {
+        const isShowing = menu.classList.contains('show');
+        menu.classList.toggle('show', !isShowing);
+        overlay.classList.toggle('show', !isShowing);
+    }
+};
+
+// 【スプレッドシート連携用配列】
+// スプレッドシートの「商材サイト」タブの内容を以下の配列に書き換えてください。
+// A列：imageUrl、B列：linkUrl、C列：name に対応しています。
+const merchandiseSites = [
+    { imageUrl: "https://via.placeholder.com/24", linkUrl: "#", name: "ツール名称1" },
+    { imageUrl: "https://via.placeholder.com/24", linkUrl: "#", name: "ツール名称2" }
+];
+
+function renderDropdownMenu() {
+    const menu = document.getElementById('dropdown-menu');
+    if (!menu) return;
+    menu.innerHTML = '';
+    merchandiseSites.forEach(site => {
+        const a = document.createElement('a');
+        a.href = site.linkUrl;
+        a.target = "_blank";
+        a.className = "dropdown-item";
+        
+        const img = document.createElement('img');
+        img.src = site.imageUrl;
+        img.className = "dropdown-icon";
+        img.alt = "";
+        
+        const span = document.createElement('span');
+        span.textContent = site.name;
+        
+        a.appendChild(img);
+        a.appendChild(span);
+        menu.appendChild(a);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  renderDropdownMenu(); // ヘッダーメニューの描画を実行
+
   const gasUrl = "https://script.google.com/macros/s/AKfycbxo2yo7ewBSCBtTEMm5QMHKGcK6itFkA3bTAdJ_1UmocMdcgKaxGgfZz0iJPQ5vNNkN/exec";
 
   const areaSelect = document.getElementById("areaSelect");
@@ -36,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentMultiStores = [];
   let currentSingleStores = [];
 
-  // ★改修：「エリア」から「地方」へ表記変更
   const areas = {
     "北海道地方": ["北海道"], 
     "東北地方": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
@@ -196,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
       populatePrefectureSelect(""); 
       updateCityCheckboxesState(); 
       
-      // データロード完了時にローディング画面を非表示
       loadingOverlay.style.display = "none";
     })
     .catch(err => {
@@ -314,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isMapInitialized) return;
     map = L.map('map').setView([35.681236, 139.767125], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     markersLayer = L.layerGroup().addTo(map);
     isMapInitialized = true;

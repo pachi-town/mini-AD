@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ミニストップAD サイネージ設置店舗検索</title>
+  <title>ミニストップAD 店舗検索</title>
   
   <!-- OpenStreetMap用のライブラリ（Leaflet） -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
-  <!-- ★改修：キャッシュ強制クリアのためのパラメータ（?v=9）を付与 -->
-  <link rel="stylesheet" href="style.css?v=9">
-  <script src="script.js?v=9" defer></script>
+  <link rel="stylesheet" href="style.css?v=10">
+  <script src="script.js?v=10" defer></script>
   <link rel="icon" type="image/x-icon" href="favicon_new.ico">
 </head>
 <body data-plan="basic">
@@ -20,9 +19,20 @@
     <p>最新のデータを読み込んでいます...</p>
   </div>
 
-  <div class="header-container">
-    <h1>ミニストップAD サイネージ設置店舗検索</h1>
+  <!-- ヘッダー本体 -->
+  <div id="header">
+    <div class="header-title">
+      <span class="title-main">ミニストップAD</span> 
+      <span class="title-sub">店舗検索</span>
+    </div>
+    <button id="menu-btn" class="hamburger-btn" onclick="toggleMenu()">
+        <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
   </div>
+  
+  <!-- ドロップダウンメニューと背景オーバーレイ -->
+  <div id="menu-overlay" onclick="toggleMenu()"></div>
+  <div id="dropdown-menu" class="dropdown-menu"></div>
   
   <div id="headerBannerContainer" class="header-banner-container" style="display: none;">
     <a id="headerBannerLink" href="#" target="_blank" rel="noopener noreferrer">
@@ -100,7 +110,6 @@
     <div class="controls card">
       <div class="filter-section">
         <div class="select-group">
-          <!-- ★改修：「エリア」から「地方」へ表記変更 -->
           <select id="areaSelect"><option value="">地方選択</option></select>
           <select id="prefectureSelect"><option value="">都道府県</option></select>
         </div>
@@ -163,7 +172,7 @@
       </div>
     </div>
 
-    <!-- 商材説明ゾーン（店舗数バッジを合体） -->
+    <!-- 商材説明ゾーン -->
     <div id="descriptionZone" class="description-zone">
       
       <div class="desc-card multi">
@@ -216,9 +225,8 @@
 
     </div>
 
-    <!-- 検索結果エリア（初期は非表示、ボタン押下で表示） -->
+    <!-- 検索結果エリア -->
     <div id="searchResultArea" style="display: none;">
-      <!-- 元の独立したサマリーコンテナ（JSで非表示化されます） -->
       <div id="storeSummary" class="summary-container" style="display: none;"></div>
 
       <div id="adBannerContainer" class="ad-banner-container" style="display: none;">

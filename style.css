@@ -7,21 +7,75 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
   background: #f3f6f9;
   color: #333;
-  padding: 20px;
+  padding: 0; /* bodyのpaddingをなくし、ヘッダーが画面端まで伸びるように調整 */
   line-height: 1.6;
   font-size: 15px;
   margin: 0;
 }
 
-.header-container { text-align: center; margin-bottom: 25px; }
-h1 { font-size: 1.6em; color: #1a2b4c; display: inline-block; border-bottom: 3px solid #3b82f6; padding-bottom: 8px; letter-spacing: 0.5px; margin: 0; }
+/* ヘッダー以外のコンテンツにパディングを適用 */
+.main-container, .header-banner-container, .ad-banner-container {
+  padding: 20px;
+}
+
+/* =========================================
+   Header & Hamburger Menu
+   ========================================= */
+#header { 
+  background-color: #e0f2fe; /* 薄い水色 */
+  color: #1a2b4c; 
+  padding: 14px 20px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  z-index: 1000; 
+  position: relative; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.header-title .title-main {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+.header-title .title-sub {
+  font-size: 0.875rem;
+  font-weight: normal;
+  color: #4b5563;
+}
+.hamburger-btn { 
+  background: none; 
+  border: none; 
+  color: #1a2b4c; 
+  cursor: pointer; 
+  padding: 4px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: 0.2s; 
+}
+.hamburger-btn:active { transform: scale(0.9); }
+
+#menu-overlay { position: fixed; inset: 0; z-index: 1999; display: none; background: rgba(0,0,0,0.3); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+#menu-overlay.show { display: block; }
+.dropdown-menu { position: absolute; top: 56px; right: 12px; background: #fff; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); z-index: 2000; min-width: 220px; overflow: hidden; transform: translateY(-10px); opacity: 0; pointer-events: none; transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e5e7eb; }
+.dropdown-menu.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.dropdown-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; text-decoration: none; color: #111; font-size: 14px; font-weight: 700; border-bottom: 1px solid #f3f4f6; transition: background 0.2s; }
+.dropdown-item:last-child { border-bottom: none; }
+.dropdown-item:active, .dropdown-item:hover { background: #f9fafb; }
+.dropdown-icon { width: 24px; height: 24px; object-fit: contain; }
+
+
 h2 { font-size: 1.3em; margin-top: 0; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; color: #1f2937; }
 h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 .small-text { font-size: 0.85em; color: #6b7280; }
 .main-container { max-width: 1100px; margin: 0 auto; }
 
 /* =========================================
-   ★改修：Loading Overlay (復活)
+   Loading Overlay
    ========================================= */
 .loading-overlay { 
   position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -37,7 +91,7 @@ h3 { font-size: 1.1em; margin-top: 0; color: #374151; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* =========================================
-   Schedule Timeline (SP時はアコーディオン)
+   Schedule Timeline
    ========================================= */
 .schedule-panel { margin-bottom: 30px; }
 .schedule-header { display: flex; justify-content: space-between; align-items: center; }
@@ -77,7 +131,7 @@ span.pc-only { display: inline; }
 .sp-only { display: none; }
 
 /* =========================================
-   Descriptions (商材カードごとアコーディオン & 店舗数バッジ)
+   Descriptions
    ========================================= */
 .description-zone { display: flex; align-items: stretch; justify-content: center; gap: 16px; margin-bottom: 24px; }
 .desc-card { display: flex; flex-direction: column; background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); border-left: 4px solid transparent; flex: 1; max-width: 350px; transition: all 0.3s ease; }
@@ -127,7 +181,6 @@ body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%)
    ========================================= */
 .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 24px; margin-bottom: 20px; }
 
-/* PC時は横一列の美しいレイアウト */
 .controls { display: flex; flex-direction: row; gap: 24px; align-items: stretch; }
 .filter-section { display: flex; flex-direction: row; gap: 20px; flex: 1; min-width: 0; }
 .select-group { display: flex; flex-direction: column; justify-content: space-between; width: 220px; flex-shrink: 0; gap: 12px; }
@@ -136,7 +189,6 @@ body[data-plan="pos"] .desc-card.single { opacity: 0.35; filter: grayscale(100%)
 
 select { padding: 0 14px; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background-color: #f9fafb; cursor: pointer; color: #374151; width: 100%; height: 46px; }
 
-/* PC用チェックボックス枠（絶対に潰れない安全なFlex wrapレイアウト） */
 .checkbox-list { 
   border: 1px solid #d1d5db; border-radius: 8px; padding: 12px; background: #f9fafb; 
   max-height: 120px; overflow-y: auto; 
@@ -172,7 +224,7 @@ input:checked + .slider:before { transform: translateX(22px); }
 .price-section-hidden.show { opacity: 1; visibility: visible; max-height: 2000px; }
 
 /* =========================================
-   Others (Tables, Summary, Maps)
+   Others
    ========================================= */
 body[data-plan="basic"] .col-multi, body[data-plan="basic"] .col-pos,
 body[data-plan="multi"] .col-basic, body[data-plan="multi"] .col-pos,
@@ -194,9 +246,7 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
 .price-table tr.highlight-pref-price td { font-size: 1.15em; font-weight: bold; color: #dc2626; background-color: #fef2f2; }
 .scroll-hint.mobile-only { display: none; }
 
-/* ★SP（スマホ）専用の超最適化レイアウト */
 @media (max-width: 768px) {
-  body { padding: 10px; font-size: 14px; }
   .pc-only { display: none !important; }
   span.pc-only { display: none !important; }
   .sp-only { display: block !important; }
@@ -247,7 +297,6 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
   
   .city-select-group { width: 100%; }
   
-  /* ★改修：SP用のチェックボックス枠（絶対に中身を表示させるための安全な縦並び） */
   .checkbox-list { 
     display: flex; flex-direction: column; flex-wrap: nowrap; gap: 8px; 
     max-height: 150px; width: 100%; padding: 10px; overflow-y: auto; 
@@ -266,7 +315,6 @@ th { background: #f9fafb; color: #4b5563; font-weight: 600; }
 }
 
 @media (min-width: 769px) {
-  /* PC時はアコーディオンを無効化（常に開く） */
   .desc-body, .schedule-content { max-height: none !important; opacity: 1 !important; overflow: visible !important; }
 }
 
